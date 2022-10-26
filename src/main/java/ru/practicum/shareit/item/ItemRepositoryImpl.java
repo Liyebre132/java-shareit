@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
 
@@ -14,7 +13,7 @@ public class ItemRepositoryImpl implements ItemRepository {
     @Override
     public Item save(Item item) {
         items.compute(item.getOwner(), (userId, userItems) -> {
-            if(userItems == null) {
+            if (userItems == null) {
                 userItems = new ArrayList<>();
             }
             item.setId(getId());
