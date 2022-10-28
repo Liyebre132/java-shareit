@@ -48,13 +48,13 @@ public class Handler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<String> methodArgumentNotValidException(MethodArgumentNotValidException e){
+    public ResponseEntity<String> methodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.info("Получены неверные данные, валидация не пройдена");
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
-    public ResponseEntity<String> throwable(Throwable e){
+    public ResponseEntity<String> throwable(Throwable e) {
         log.error("Произошлка ошибка");
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
