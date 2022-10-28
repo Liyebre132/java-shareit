@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 
 @Data
 public class ItemRequestDto {
-    Long id;
-    String description;
-    Long requestor;
-    LocalDateTime created;
+    private Long id;
+    private String description;
+    private Long requestor;
+    private LocalDateTime created;
 }

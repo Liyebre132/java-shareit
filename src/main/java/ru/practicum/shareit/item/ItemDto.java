@@ -9,16 +9,16 @@ import javax.validation.constraints.NotNull;
 @Data
 @AllArgsConstructor
 public class ItemDto {
-    Long id;
+    private Long id;
 
     @NotBlank
-    String name;
+    private String name;
 
     @NotBlank
-    String description;
+    private String description;
 
     @NotNull
-    Boolean available;
+    private Boolean available;
 
-    Long request;
+    private Long request;
 }

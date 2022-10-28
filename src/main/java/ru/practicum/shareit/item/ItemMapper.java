@@ -1,33 +1,37 @@
 package ru.practicum.shareit.item;
 
-import java.util.ArrayList;
-import java.util.List;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import ru.practicum.shareit.user.User;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ItemMapper {
     public static ItemDto toItemDto(Item item) {
          return new ItemDto(
                  item.getId(),
                  item.getName(),
                  item.getDescription(),
-                 item.getAvailable(),
+                 item.isAvailable(),
                  item.getRequest() != null ? item.getRequest().getId() : null
         );
     }
 
-    public static Item toItem(ItemDto itemDto, long userId) {
+    public static Item toItem(ItemDto itemDto, User user) {
         return Item.builder()
+                .id(itemDto.getId())
                 .name(itemDto.getName())
                 .description(itemDto.getDescription())
                 .available(itemDto.getAvailable())
-                .owner(userId)
+                .owner(user)
                 .build();
     }
 
-    public static List<ItemDto> mapToItemDto(Iterable<Item> items) {
-        List<ItemDto> dtos = new ArrayList<>();
-        for (Item item : items) {
-            dtos.add(toItemDto(item));
-        }
-        return dtos;
+    public static List<ItemDto> mapToItemDto(List<Item> items) {
+        return items.stream()
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 }

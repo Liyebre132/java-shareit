@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.util.List;
@@ -14,14 +15,25 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto addNewItem(long userId, ItemDto itemDto) {
-        userRepository.getById(userId);
-        Item item = itemRepository.save(ItemMapper.toItem(itemDto, userId));
+        User user = userRepository.getById(userId);
+        Item item = itemRepository.save(ItemMapper.toItem(itemDto, user));
         return ItemMapper.toItemDto(item);
     }
 
     @Override
     public ItemDto update(long userId, long id, ItemDto itemDto) {
-        Item item = itemRepository.update(userId, id, ItemMapper.toItem(itemDto, userId));
+        User user = userRepository.getById(userId);
+        ItemDto currentItem = getById(id);
+        if (itemDto.getName() != null && !itemDto.getName().isBlank()) {
+            currentItem.setName(itemDto.getName());
+        }
+        if (itemDto.getDescription() != null && !itemDto.getDescription().isBlank()) {
+            currentItem.setDescription(itemDto.getDescription());
+        }
+        if (itemDto.getAvailable() != null) {
+            currentItem.setAvailable(itemDto.getAvailable());
+        }
+        Item item = itemRepository.update(userId, id, ItemMapper.toItem(currentItem, user));
         return ItemMapper.toItemDto(item);
     }
 

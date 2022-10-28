@@ -1,18 +1,20 @@
 package ru.practicum.shareit.item;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
-@Component
+@Repository
 public class ItemRepositoryImpl implements ItemRepository {
     private final Map<Long, List<Item>> items = new HashMap<>();
+    private final Map<Long, Item> storage = new LinkedHashMap<>();
     private long id;
 
     @Override
     public Item save(Item item) {
-        items.compute(item.getOwner(), (userId, userItems) -> {
+        items.compute(item.getOwner().getId(), (userId, userItems) -> {
             if (userItems == null) {
                 userItems = new ArrayList<>();
             }
@@ -20,28 +22,18 @@ public class ItemRepositoryImpl implements ItemRepository {
             userItems.add(item);
             return userItems;
         });
+        storage.put(item.getId(), item);
         return item;
     }
 
     @Override
     public Item update(long userId, long id, Item item) {
-        List<Item> userItems = getAllByUser(userId);
-        Optional<Item> currentItem = userItems.stream()
-                .filter(i -> id == i.getId())
-                .findAny();
-        if (currentItem.isPresent()) {
-            int index = userItems.indexOf(currentItem.get());
-            if (item.getName() != null) {
-                currentItem.get().setName(item.getName());
-            }
-            if (item.getDescription() != null) {
-                currentItem.get().setDescription(item.getDescription());
-            }
-            if (item.getAvailable() != null) {
-                currentItem.get().setAvailable(item.getAvailable());
-            }
-            items.get(userId).set(index, currentItem.get());
-            return currentItem.get();
+        Item currentItem = getById(id);
+        if (Objects.equals(currentItem.getOwner().getId(), item.getOwner().getId())) {
+            storage.put(id, item);
+            int index = items.get(userId).indexOf(currentItem);
+            items.get(userId).set(index, item);
+            return item;
         } else {
             throw new ItemNotFoundException("Вещь с таким ID не найдена");
         }
@@ -49,22 +41,18 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public Item getById(long id) {
-        List<Item> itemList = getAll();
-
-        Optional<Item> item = itemList.stream()
-                .filter(i -> id == i.getId())
-                .findAny();
-
-        if (item.isEmpty()) {
-            throw new ItemNotFoundException("Вещь с таким ID не найдена");
+        Item item = storage.get(id);
+        if (item != null) {
+            return item;
         } else {
-            return item.get();
+            throw new ItemNotFoundException("Вещь с таким ID не найдена");
         }
     }
 
     @Override
     public void delete(long userId, long id) {
-        items.remove(id);
+        storage.remove(id);
+        items.get(userId).remove(getById(id));
     }
 
     @Override
@@ -78,30 +66,23 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public List<Item> getAll() {
-        List<Item> itemList = new ArrayList<>();
-
-        for (List<Item> i : items.values()) {
-            if (!i.isEmpty()) {
-                itemList.addAll(i);
-            }
-        }
-        return itemList;
+        return new ArrayList<>(storage.values());
     }
 
     @Override
     public List<Item> search(String text) {
-        List<Item> allItems = getAll();
         List<Item> result = new ArrayList<>();
         if (!text.isBlank()) {
-            for (Item item : allItems) {
-                boolean isItem = (item.getName().toLowerCase().contains(text.toLowerCase()) ||
-                        item.getDescription().toLowerCase().contains(text.toLowerCase()));
-                if (item.getAvailable() && isItem) {
-                    result.add(item);
-                }
-            }
+            result = getAll().stream()
+                    .filter(i -> isRightItem(i, text))
+                    .collect(Collectors.toList());
         }
         return result;
+    }
+
+    private boolean isRightItem(Item item, String text) {
+        return (item.getName().toLowerCase().contains(text.toLowerCase()) ||
+                item.getDescription().toLowerCase().contains(text.toLowerCase())) && item.isAvailable();
     }
 
     private long getId() {

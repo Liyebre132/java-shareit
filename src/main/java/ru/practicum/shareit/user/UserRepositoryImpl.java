@@ -1,6 +1,6 @@
 package ru.practicum.shareit.user;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.user.exception.UserExistsException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 
@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Component
+@Repository
 public class UserRepositoryImpl implements  UserRepository {
 
     private final Map<Long, User> users = new HashMap<>();
@@ -27,7 +27,7 @@ public class UserRepositoryImpl implements  UserRepository {
     public User update(long id, User user) {
         User currentUser = getById(id);
 
-        if (user.getName() != null) {
+        if (user.getName() != null && !user.getName().isBlank()) {
             currentUser.setName(user.getName());
         }
 
