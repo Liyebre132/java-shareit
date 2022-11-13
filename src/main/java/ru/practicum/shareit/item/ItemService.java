@@ -7,7 +7,7 @@ interface ItemService {
 
     ItemDto update(long userId, long id, ItemDto item);
 
-    ItemDto getById(long id);
+    ItemDto getById(long userId, long id);
 
     void delete(long userId, long id);
 
@@ -16,4 +16,6 @@ interface ItemService {
     List<ItemDto> search(String text);
 
     List<ItemDto> getAll();
+
+    CommentDto addComment(long userId, long itemId, CommentDto commentDto);
 }
