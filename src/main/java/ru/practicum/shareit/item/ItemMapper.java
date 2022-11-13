@@ -12,13 +12,13 @@ import java.util.stream.Collectors;
 public class ItemMapper {
 
     public static ItemDto toItemDto(Item item) {
-        return ItemDto.builder()
-                .id(item.getId())
-                .name(item.getName())
-                .description(item.getDescription())
-                .available(item.isAvailable())
-                .request(item.getRequest())
-                .build();
+        ItemDto itemDto = new ItemDto();
+        itemDto.setId(item.getId());
+        itemDto.setName(item.getName());
+        itemDto.setDescription(item.getDescription());
+        itemDto.setAvailable(item.isAvailable());
+        itemDto.setRequest(item.getRequest());
+        return itemDto;
     }
 
     public static Item toItem(ItemDto itemDto, Long userId) {
