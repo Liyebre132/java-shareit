@@ -23,6 +23,7 @@ public class BookingMapper {
                 booking.getStatus()
         );
     }
+
     public static BookingDto toBookingDto(Booking booking) {
         return new BookingDto(
                 booking.getId(),

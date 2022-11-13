@@ -10,7 +10,6 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 
-import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Comparator;
