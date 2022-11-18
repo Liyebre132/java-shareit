@@ -13,10 +13,10 @@ import javax.validation.constraints.NotNull;
 public class UserDto {
     private Long id;
 
-    @NotBlank
+    @NotBlank(groups = {Marker.OnCreate.class})
     private String name;
 
-    @Email
-    @NotNull
+    @Email(groups = {Marker.OnUpdate.class, Marker.OnCreate.class})
+    @NotNull(groups = {Marker.OnCreate.class})
     private String email;
 }

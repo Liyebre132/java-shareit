@@ -1,39 +1,40 @@
 package ru.practicum.shareit.item;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/items")
 public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    public ItemDto add(@RequestHeader("X-Sharer-User-Id") long userId, @Valid
+    public ItemResult add(@RequestHeader("X-Sharer-User-Id") long userId, @Valid
                        @RequestBody ItemDto item) {
         return itemService.addNewItem(userId, item);
     }
 
     @PatchMapping("{id}")
-    public ItemDto update(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ItemResult update(@RequestHeader("X-Sharer-User-Id") long userId,
                           @PathVariable long id,
                           @RequestBody ItemDto item) {
         return itemService.update(userId, id, item);
     }
 
     @GetMapping("{id}")
-    public ItemDto getById(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long id) {
+    public ItemResult getById(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long id) {
         return itemService.getById(userId, id);
     }
 
     @GetMapping
-    public List<ItemDto> getAll(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId) {
+    public List<ItemResult> getAll(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId) {
         if (userId != null) {
             return itemService.getAllByUser(userId);
         } else {
@@ -42,7 +43,10 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDto> search(@RequestParam String text) {
+    public List<ItemResult> search(@RequestParam String text) {
+        if (text.isBlank()) {
+            return Collections.emptyList();
+        }
         return itemService.search(text);
     }
 

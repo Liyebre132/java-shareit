@@ -13,6 +13,7 @@ import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.user.exception.UserExistsException;
 
 import javax.persistence.EntityNotFoundException;
+import javax.validation.ConstraintViolationException;
 import java.util.Map;
 
 @Slf4j
@@ -101,12 +102,18 @@ public class Handler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> notFount(final EntityNotFoundException e) {
+    public Map<String, String> notFound(final EntityNotFoundException e) {
         log.info("Не удалось найти запрашиваемую информацию");
         return Map.of(
                 "error", "404",
                 "errorMessage", e.getMessage()
         );
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> constraintViolation(ConstraintViolationException e) {
+        log.info("Получены неверные данные, валидация не пройдена");
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler

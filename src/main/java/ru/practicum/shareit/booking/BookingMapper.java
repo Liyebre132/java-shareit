@@ -3,9 +3,7 @@ package ru.practicum.shareit.booking;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.item.Item;
-import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.UserMapper;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,31 +16,30 @@ public class BookingMapper {
                 booking.getId(),
                 booking.getStart(),
                 booking.getEnd(),
-                ItemMapper.toItemDto(booking.getItem()),
-                UserMapper.toUserDto(booking.getBooker()),
+                new BookingResult.Item(booking.getItem().getId(),
+                        booking.getItem().getName()),
+                new BookingResult.Booker(booking.getBooker().getId(),
+                        booking.getBooker().getName()),
                 booking.getStatus()
         );
     }
 
     public static BookingDto toBookingDto(Booking booking) {
         return new BookingDto(
-                booking.getId(),
                 booking.getStart(),
                 booking.getEnd(),
-                booking.getItem().getId(),
-                booking.getBooker().getId(),
-                booking.getStatus()
+                booking.getItem().getId()
         );
     }
 
-    public static Booking toBooking(BookingDto bookingDto, Item item, User user) {
+    public static Booking toBooking(BookingDto bookingDto, Item item, User user, BookingStatus status) {
         return new Booking(
-                bookingDto.getId(),
+                0L, // захардкодил 0L тк он же обязателен и передавать чет надо, умней ничего не придумал :D
                 bookingDto.getStart(),
                 bookingDto.getEnd(),
                 item,
                 user,
-                bookingDto.getStatus()
+                status
         );
     }
 

@@ -11,30 +11,30 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ItemMapper {
 
-    public static ItemDto toItemDto(Item item) {
-        ItemDto itemDto = new ItemDto();
-        itemDto.setId(item.getId());
-        itemDto.setName(item.getName());
-        itemDto.setDescription(item.getDescription());
-        itemDto.setAvailable(item.isAvailable());
-        itemDto.setRequest(item.getRequest());
-        return itemDto;
+    public static ItemResult toItemResult(Item item) {
+        ItemResult result = new ItemResult();
+        result.setId(item.getId());
+        result.setName(item.getName());
+        result.setDescription(item.getDescription());
+        result.setAvailable(item.isAvailable());
+        result.setRequest(item.getRequest());
+        return result;
     }
 
-    public static Item toItem(ItemDto itemDto, Long userId) {
+    public static Item toItem(ItemResult itemResult, User user) {
         return new Item(
-                itemDto.getId(),
-                itemDto.getName(),
-                itemDto.getDescription(),
-                itemDto.getAvailable(),
-                userId,
-                itemDto.getRequest()
+                0L, // так же захардкодил как и с бронированием
+                itemResult.getName(),
+                itemResult.getDescription(),
+                itemResult.getAvailable(),
+                user,
+                itemResult.getRequest()
         );
     }
 
-    public static List<ItemDto> mapToItemDto(List<Item> items) {
+    public static List<ItemResult> mapToItemDto(List<Item> items) {
         return items.stream()
-                .map(ItemMapper::toItemDto)
+                .map(ItemMapper::toItemResult)
                 .collect(Collectors.toList());
     }
 

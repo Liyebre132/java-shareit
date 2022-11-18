@@ -1,15 +1,16 @@
 package ru.practicum.shareit.booking;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.booking.exception.BookingDateException;
 
 import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping(path = "/bookings")
 public class BookingController {
     private final BookingService bookingService;
@@ -17,6 +18,12 @@ public class BookingController {
     @PostMapping
     public BookingResult add(@RequestHeader("X-Sharer-User-Id") long userId,
                              @Valid @RequestBody BookingDto bookingDto) {
+        if (bookingDto.getEnd().equals(bookingDto.getStart())) {
+            throw new BookingDateException("Время старта не должно быть одинаковым с временем завершения");
+        }
+        if (bookingDto.getEnd().isBefore(bookingDto.getStart())) {
+            throw new BookingDateException("Время начала бронирования раньше времени его завершения");
+        }
         return bookingService.addNewBooking(userId, bookingDto);
     }
 
