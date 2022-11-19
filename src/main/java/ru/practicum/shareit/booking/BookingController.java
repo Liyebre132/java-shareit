@@ -18,11 +18,8 @@ public class BookingController {
     @PostMapping
     public BookingResult add(@RequestHeader("X-Sharer-User-Id") long userId,
                              @Valid @RequestBody BookingDto bookingDto) {
-        if (bookingDto.getEnd().equals(bookingDto.getStart())) {
-            throw new BookingDateException("Время старта не должно быть одинаковым с временем завершения");
-        }
-        if (bookingDto.getEnd().isBefore(bookingDto.getStart())) {
-            throw new BookingDateException("Время начала бронирования раньше времени его завершения");
+        if (!bookingDto.getEnd().isAfter(bookingDto.getStart())) {
+            throw new BookingDateException("Неверное время бронирования");
         }
         return bookingService.addNewBooking(userId, bookingDto);
     }

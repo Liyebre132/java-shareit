@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto update(long id, UserDto userDto) {
         User user = repository.getById(id);
-        if (userDto.getName() != null) {
+        if (userDto.getName() != null && !userDto.getName().isBlank()) {
             user.setName(userDto.getName());
         }
         if (userDto.getEmail() != null) {

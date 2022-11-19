@@ -34,13 +34,14 @@ public class BookingMapper {
 
     public static Booking toBooking(BookingDto bookingDto, Item item, User user, BookingStatus status) {
         return new Booking(
-                0L, // захардкодил 0L тк он же обязателен и передавать чет надо, умней ничего не придумал :D
+                0L, // пробовал сделать как null - валятся тесты, почему то айдишник +1 делается лишний раз
                 bookingDto.getStart(),
                 bookingDto.getEnd(),
                 item,
                 user,
                 status
         );
+        // так же тут пробовал создать пустой объект и к нему просто засетить поля - так же валится тест -_-
     }
 
     public static List<BookingDto> mapToBookingDto(List<Booking> bookings) {

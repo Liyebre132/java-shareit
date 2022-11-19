@@ -12,6 +12,7 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,11 +78,8 @@ public class BookingServiceImpl implements BookingService {
                 return BookingMapper.mapToBookingResult(repository.findAllByBookerId(userId,
                         Sort.by(Sort.Direction.DESC, "start")));
             case PAST:
-                List<BookingResult> list = BookingMapper.mapToBookingResult(repository.findAllByBookerIdPast(userId,
-                        Sort.by(Sort.Direction.ASC, "end")));
-                List<BookingResult> results = new ArrayList<>();
-                results.add(list.get(0));
-                return results;
+                return BookingMapper.mapToBookingResult(repository.findByBooker_IdAndEndIsBefore(userId,
+                        LocalDateTime.now(), Sort.by(Sort.Direction.DESC, "start")));
             case FUTURE:
                 return BookingMapper.mapToBookingResult(repository.findAllByBookerIdFuture(userId,
                         Sort.by(Sort.Direction.DESC, "start")));
@@ -110,11 +108,9 @@ public class BookingServiceImpl implements BookingService {
                 return BookingMapper.mapToBookingResult(repository.findAllByOwnerId(userId,
                         Sort.by(Sort.Direction.DESC, "start")));
             case PAST:
-                List<BookingResult> list = BookingMapper.mapToBookingResult(repository.findAllByOwnerIdPast(userId,
-                        Sort.by(Sort.Direction.ASC, "end")));
-                List<BookingResult> results = new ArrayList<>();
-                results.add(list.get(0));
-                return results;
+                return BookingMapper.mapToBookingResult(repository.findByItem_Owner_IdAndEndIsBefore(userId,
+                        LocalDateTime.now(),
+                        Sort.by(Sort.Direction.DESC, "start")));
             case FUTURE:
                 return BookingMapper.mapToBookingResult(repository.findAllByOwnerIdFuture(userId,
                         Sort.by(Sort.Direction.DESC, "start")));
