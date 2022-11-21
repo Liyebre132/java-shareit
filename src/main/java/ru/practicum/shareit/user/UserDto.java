@@ -1,21 +1,22 @@
 package ru.practicum.shareit.user;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class UserDto {
     private Long id;
 
-    @NotBlank
+    @NotBlank(groups = {Marker.OnCreate.class})
     private String name;
 
-    @Email
-    @NotNull
+    @Email(groups = {Marker.OnUpdate.class, Marker.OnCreate.class})
+    @NotNull(groups = {Marker.OnCreate.class})
     private String email;
 }
