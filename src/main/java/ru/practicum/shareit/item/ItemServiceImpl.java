@@ -14,6 +14,8 @@ import ru.practicum.shareit.user.UserRepository;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @Slf4j
@@ -24,7 +26,6 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
-
     private final CommentRepository commentRepository;
 
     @Override
@@ -96,22 +97,22 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemResult> getAllByUser(long userId) {
         List<Item> items = itemRepository.getAllByUser(userId);
         List<ItemResult> results = new ArrayList<>();
+        Map<Item, List<Comment>> comments =
+                commentRepository.findByItemIn(items, Sort.by(DESC, "created"))
+                        .stream()
+                        .collect(groupingBy(Comment::getItem, toList()));
+        Map<Item, List<Booking>> bookings =
+                bookingRepository.findByItemIn(items, Sort.by(DESC, "start"))
+                        .stream()
+                        .collect(groupingBy(Booking::getItem, toList()));
         for (Item item : items) {
-            List<Item> currentItem = new ArrayList<>();
-            currentItem.add(item);
-
-            List<Comment> comments = commentRepository.findByItemIn(currentItem, Sort.by(DESC, "created"));
-            List<Booking> bookings = bookingRepository.findByItemIn(currentItem, Sort.by(DESC, "start"));
-
             ItemResult itemResult = ItemMapper.toItemResult(item);
-            results.add(itemResult);
-
-            if (bookings != null) {
-                Booking nextBooking = bookings.stream()
+            if (bookings.get(item) != null) {
+                Booking nextBooking = bookings.get(item).stream()
                         .filter(b -> b.getStart().isAfter(LocalDateTime.now()))
                         .reduce((first, second) -> second)
                         .orElse(null);
-                Booking lastBooking = bookings.stream()
+                Booking lastBooking = bookings.get(item).stream()
                         .filter(b -> b.getEnd().isEqual(LocalDateTime.now()) || b.getEnd().isBefore(LocalDateTime.now())
                         || (b.getStart().isEqual(LocalDateTime.now()) || b.getStart().isBefore(LocalDateTime.now())))
                         .findFirst()
@@ -125,9 +126,10 @@ public class ItemServiceImpl implements ItemService {
                             lastBooking.getBooker().getId()));
                 }
             }
-            if (!comments.isEmpty()) {
-                itemResult.setComments(ItemMapper.mapToCommentDto(comments));
+            if (comments.get(item) != null) {
+                itemResult.setComments(ItemMapper.mapToCommentDto(comments.get(item)));
             }
+            results.add(itemResult);
         }
         return results;
     }
