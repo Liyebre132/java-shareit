@@ -2,7 +2,7 @@ package ru.practicum.shareit.item;
 
 import java.util.List;
 
-interface ItemService {
+public interface ItemService {
     ItemResult addNewItem(long userId, ItemDto itemDto);
 
     ItemResult update(long userId, long id, ItemDto item);
