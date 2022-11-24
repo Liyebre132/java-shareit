@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,9 +16,13 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByItemIn(Collection<Item> items, Sort sort);
 
-    List<Booking> findByBooker_IdAndEndIsBefore(Long userId, LocalDateTime localDateTime, Sort sort);
+    List<Booking> findByBooker_IdAndEndIsBefore(Long userId, LocalDateTime localDateTime, Pageable pageable);
 
-    List<Booking> findByItem_Owner_IdAndEndIsBefore(Long userId, LocalDateTime localDateTime, Sort sort);
+    List<Booking> findByItem_Owner_IdAndEndIsBefore(Long userId, LocalDateTime localDateTime, Pageable pageable);
+
+    @Query("SELECT b FROM Booking b " +
+            "WHERE b.booker.id = ?1")
+    List<Booking> findAllByBookerId(Long bookerId, Pageable pageable);
 
     @Query("SELECT b FROM Booking b " +
             "WHERE b.booker.id = ?1")
@@ -27,45 +32,45 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "WHERE b.booker.id = ?1 AND " +
             "b.end BETWEEN b.start and b.end AND " +
             "b.status = 'REJECTED'")
-    List<Booking> findAllByBookerIdCurrent(Long bookerId, Sort sort);
+    List<Booking> findAllByBookerIdCurrent(Long bookerId, Pageable pageable);
 
     @Query("SELECT b FROM Booking b " +
             "WHERE b.booker.id = ?1 AND " +
             "b.start > current_date")
-    List<Booking> findAllByBookerIdFuture(Long bookerId, Sort sort);
+    List<Booking> findAllByBookerIdFuture(Long bookerId, Pageable pageable);
 
     @Query("SELECT b FROM Booking b " +
             "WHERE b.booker.id = ?1 AND " +
             "b.status = 'WAITING'")
-    List<Booking> findAllByBookerIdWaiting(Long bookerId, Sort sort);
+    List<Booking> findAllByBookerIdWaiting(Long bookerId, Pageable pageable);
 
     @Query("SELECT b FROM Booking b " +
             "WHERE b.booker.id = ?1 AND " +
             "b.status = 'REJECTED'")
-    List<Booking> findAllByBookerIdRejected(Long bookerId, Sort sort);
+    List<Booking> findAllByBookerIdRejected(Long bookerId, Pageable pageable);
 
     @Query("SELECT b FROM Booking b " +
             "WHERE b.item.owner.id = ?1")
-    List<Booking> findAllByOwnerId(Long ownerId, Sort sort);
+    List<Booking> findAllByOwnerId(Long ownerId, Pageable pageable);
 
     @Query("SELECT b FROM Booking b " +
             "WHERE b.item.owner.id = ?1 AND " +
             "b.end BETWEEN b.start and b.end AND " +
             "b.status = 'REJECTED'")
-    List<Booking> findAllByOwnerIdCurrent(Long bookerId, Sort sort);
+    List<Booking> findAllByOwnerIdCurrent(Long bookerId, Pageable pageable);
 
     @Query("SELECT b FROM Booking b " +
             "WHERE b.item.owner.id = ?1 AND " +
             "b.start > current_date")
-    List<Booking> findAllByOwnerIdFuture(Long bookerId, Sort sort);
+    List<Booking> findAllByOwnerIdFuture(Long bookerId, Pageable pageable);
 
     @Query("SELECT b FROM Booking b " +
             "WHERE b.item.owner.id = ?1 AND " +
             "b.status = 'WAITING'")
-    List<Booking> findAllByOwnerIdWaiting(Long bookerId, Sort sort);
+    List<Booking> findAllByOwnerIdWaiting(Long bookerId, Pageable pageable);
 
     @Query("SELECT b FROM Booking b " +
             "WHERE b.item.owner.id = ?1 AND " +
             "b.status = 'REJECTED'")
-    List<Booking> findAllByOwnerIdRejected(Long bookerId, Sort sort);
+    List<Booking> findAllByOwnerIdRejected(Long bookerId, Pageable pageable);
 }

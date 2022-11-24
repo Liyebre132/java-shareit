@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.exception.BookingDateException;
+import ru.practicum.shareit.booking.exception.BookingNotValidException;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -30,15 +31,25 @@ public class BookingController {
     }
 
     @GetMapping
-    public List<BookingResult> getAllByBooker(@RequestHeader("X-Sharer-User-Id") long userId,
-                                            @RequestParam(defaultValue = "ALL") String state) {
-        return bookingService.getAllByBooker(userId, state);
+    public List<BookingResult> getAllByBooker(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                              @RequestParam(defaultValue = "ALL") String state,
+                                              @RequestParam(defaultValue = "0") int from,
+                                              @RequestParam(defaultValue = "10") int size) {
+        if (from < 0 || size < 0) {
+            throw new BookingNotValidException("Некорректно переданы данные для поиска");
+        }
+        return bookingService.getAllByBooker(userId, state, from, size);
     }
 
     @GetMapping("/owner")
-    public List<BookingResult> getAllByOwner(@RequestHeader("X-Sharer-User-Id") long userId,
-                                              @RequestParam(defaultValue = "ALL") String state) {
-        return bookingService.getAllByOwner(userId, state);
+    public List<BookingResult> getAllByOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                             @RequestParam(defaultValue = "ALL") String state,
+                                             @RequestParam(defaultValue = "0") int from,
+                                             @RequestParam(defaultValue = "10") int size) {
+        if (from < 0 || size < 0) {
+            throw new BookingNotValidException("Некорректно переданы данные для поиска");
+        }
+        return bookingService.getAllByOwner(userId, state, from, size);
     }
 
     @PatchMapping("{bookingId}")

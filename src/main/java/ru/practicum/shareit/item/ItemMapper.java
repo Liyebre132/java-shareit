@@ -17,7 +17,7 @@ public class ItemMapper {
         result.setName(item.getName());
         result.setDescription(item.getDescription());
         result.setAvailable(item.isAvailable());
-        result.setRequest(item.getRequest());
+        result.setRequestId(item.getRequest());
         return result;
     }
 
@@ -28,11 +28,11 @@ public class ItemMapper {
                 itemResult.getDescription(),
                 itemResult.getAvailable(),
                 user,
-                itemResult.getRequest()
+                itemResult.getRequestId()
         );
     }
 
-    public static List<ItemResult> mapToItemDto(List<Item> items) {
+    public static List<ItemResult> mapToItemResult(List<Item> items) {
         return items.stream()
                 .map(ItemMapper::toItemResult)
                 .collect(Collectors.toList());

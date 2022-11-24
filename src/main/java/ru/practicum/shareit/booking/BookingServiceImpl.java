@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,61 +68,54 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingResult> getAllByBooker(long userId, String state) {
+    public List<BookingResult> getAllByBooker(long userId, String state, int from, int size) {
         if (userRepository.findById(userId).isEmpty()) {
             throw new UserNotFoundException("Пользователь с таким ID не найден");
         }
         BookingStates st = BookingStates.findByName(state);
+        PageRequest pageRequest = PageRequest.of(from / size, size,
+                Sort.by(Sort.Direction.DESC, "start"));
         switch (st) {
             case ALL:
-                return BookingMapper.mapToBookingResult(repository.findAllByBookerId(userId,
-                        Sort.by(Sort.Direction.DESC, "start")));
+                return BookingMapper.mapToBookingResult(repository.findAllByBookerId(userId, pageRequest));
             case PAST:
                 return BookingMapper.mapToBookingResult(repository.findByBooker_IdAndEndIsBefore(userId,
-                        LocalDateTime.now(), Sort.by(Sort.Direction.DESC, "start")));
+                        LocalDateTime.now(), pageRequest));
             case FUTURE:
-                return BookingMapper.mapToBookingResult(repository.findAllByBookerIdFuture(userId,
-                        Sort.by(Sort.Direction.DESC, "start")));
+                return BookingMapper.mapToBookingResult(repository.findAllByBookerIdFuture(userId, pageRequest));
             case CURRENT:
-                return BookingMapper.mapToBookingResult(repository.findAllByBookerIdCurrent(userId,
-                        Sort.by(Sort.Direction.DESC, "start")));
+                return BookingMapper.mapToBookingResult(repository.findAllByBookerIdCurrent(userId, pageRequest));
             case WAITING:
-                return BookingMapper.mapToBookingResult(repository.findAllByBookerIdWaiting(userId,
-                        Sort.by(Sort.Direction.DESC, "start")));
+                return BookingMapper.mapToBookingResult(repository.findAllByBookerIdWaiting(userId, pageRequest));
             case REJECTED:
-                return BookingMapper.mapToBookingResult(repository.findAllByBookerIdRejected(userId,
-                        Sort.by(Sort.Direction.DESC, "start")));
+                return BookingMapper.mapToBookingResult(repository.findAllByBookerIdRejected(userId, pageRequest));
             default:
                 throw new BookingIncorrectStateException("UNSUPPORTED_STATUS");
         }
     }
 
     @Override
-    public List<BookingResult> getAllByOwner(long userId, String state) {
+    public List<BookingResult> getAllByOwner(long userId, String state, int from, int size) {
         if (userRepository.findById(userId).isEmpty()) {
             throw new UserNotFoundException("Пользователь с таким ID не найден");
         }
         BookingStates st = BookingStates.findByName(state);
+        PageRequest pageRequest = PageRequest.of(from / size, size,
+                Sort.by(Sort.Direction.DESC, "start"));
         switch (st) {
             case ALL:
-                return BookingMapper.mapToBookingResult(repository.findAllByOwnerId(userId,
-                        Sort.by(Sort.Direction.DESC, "start")));
+                return BookingMapper.mapToBookingResult(repository.findAllByOwnerId(userId, pageRequest));
             case PAST:
                 return BookingMapper.mapToBookingResult(repository.findByItem_Owner_IdAndEndIsBefore(userId,
-                        LocalDateTime.now(),
-                        Sort.by(Sort.Direction.DESC, "start")));
+                        LocalDateTime.now(), pageRequest));
             case FUTURE:
-                return BookingMapper.mapToBookingResult(repository.findAllByOwnerIdFuture(userId,
-                        Sort.by(Sort.Direction.DESC, "start")));
+                return BookingMapper.mapToBookingResult(repository.findAllByOwnerIdFuture(userId, pageRequest));
             case CURRENT:
-                return BookingMapper.mapToBookingResult(repository.findAllByOwnerIdCurrent(userId,
-                        Sort.by(Sort.Direction.DESC, "start")));
+                return BookingMapper.mapToBookingResult(repository.findAllByOwnerIdCurrent(userId, pageRequest));
             case WAITING:
-                return BookingMapper.mapToBookingResult(repository.findAllByOwnerIdWaiting(userId,
-                        Sort.by(Sort.Direction.DESC, "start")));
+                return BookingMapper.mapToBookingResult(repository.findAllByOwnerIdWaiting(userId, pageRequest));
             case REJECTED:
-                return BookingMapper.mapToBookingResult(repository.findAllByOwnerIdRejected(userId,
-                        Sort.by(Sort.Direction.DESC, "start")));
+                return BookingMapper.mapToBookingResult(repository.findAllByOwnerIdRejected(userId, pageRequest));
             default:
                 throw new BookingIncorrectStateException("UNSUPPORTED_STATUS");
         }

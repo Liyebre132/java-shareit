@@ -3,6 +3,7 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.exception.ItemNotValidException;
 
 import javax.validation.Valid;
 import java.util.Collections;
@@ -34,20 +35,26 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemResult> getAll(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId) {
-        if (userId != null) {
-            return itemService.getAllByUser(userId);
-        } else {
-            return itemService.getAll();
+    public List<ItemResult> getAll(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                   @RequestParam(defaultValue = "0") int from,
+                                   @RequestParam(defaultValue = "10") int size) {
+        if (from < 0 || size < 0) {
+            throw new ItemNotValidException("Некорректно переданы данные для поиска");
         }
+        return itemService.getAllByUser(userId, from, size);
     }
 
     @GetMapping("/search")
-    public List<ItemResult> search(@RequestParam String text) {
+    public List<ItemResult> search(@RequestParam String text,
+                                   @RequestParam(defaultValue = "0") int from,
+                                   @RequestParam(defaultValue = "10") int size) {
         if (text.isBlank()) {
             return Collections.emptyList();
         }
-        return itemService.search(text);
+        if (from < 0 || size < 0) {
+            throw new ItemNotValidException("Некорректно переданы данные для поиска");
+        }
+        return itemService.search(text, from, size);
     }
 
     @DeleteMapping("{id}")

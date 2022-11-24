@@ -23,7 +23,7 @@ public class ItemResult {
 
     private List<CommentDto> comments;
 
-    private Long request;
+    private Long requestId;
 
     @Data
     @AllArgsConstructor

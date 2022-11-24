@@ -11,11 +11,9 @@ interface ItemService {
 
     void delete(long userId, long id);
 
-    List<ItemResult> getAllByUser(long userId);
+    List<ItemResult> getAllByUser(long userId, int from, int size);
 
-    List<ItemResult> search(String text);
-
-    List<ItemResult> getAll();
+    List<ItemResult> search(String text, int from, int size);
 
     CommentDto addComment(long userId, long itemId, CommentDto commentDto);
 }

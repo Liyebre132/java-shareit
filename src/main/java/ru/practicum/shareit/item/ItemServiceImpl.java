@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,7 @@ import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
@@ -36,6 +38,7 @@ public class ItemServiceImpl implements ItemService {
         itemResult.setName(itemDto.getName());
         itemResult.setDescription(itemDto.getDescription());
         itemResult.setAvailable(itemDto.getAvailable());
+        itemResult.setRequestId(itemDto.getRequestId());
         Item item = itemRepository.save(ItemMapper.toItem(itemResult, user));
         return ItemMapper.toItemResult(item);
     }
@@ -94,8 +97,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemResult> getAllByUser(long userId) {
-        List<Item> items = itemRepository.getAllByUser(userId);
+    public List<ItemResult> getAllByUser(long userId, int from, int size) {
+        List<Item> items = itemRepository.findAllByOwner_Id(userId, PageRequest.of(from / size, size)).stream()
+                .collect(Collectors.toList());
         List<ItemResult> results = new ArrayList<>();
         Map<Item, List<Comment>> comments =
                 commentRepository.findByItemIn(items, Sort.by(DESC, "created"))
@@ -135,13 +139,8 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemResult> search(String text) {
-        return ItemMapper.mapToItemDto(itemRepository.search(text));
-    }
-
-    @Override
-    public List<ItemResult> getAll() {
-        return ItemMapper.mapToItemDto(itemRepository.findAll());
+    public List<ItemResult> search(String text, int from, int size) {
+        return ItemMapper.mapToItemResult(itemRepository.search(text, PageRequest.of(from / size, size)));
     }
 
     @Override

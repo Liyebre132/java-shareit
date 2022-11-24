@@ -9,8 +9,8 @@ interface BookingService {
 
     BookingResult getById(long userId, long id);
 
-    List<BookingResult> getAllByBooker(long userId, String state);
+    List<BookingResult> getAllByBooker(long userId, String state, int from, int size);
 
-    List<BookingResult> getAllByOwner(long userId, String state);
+    List<BookingResult> getAllByOwner(long userId, String state, int from, int size);
 
 }
