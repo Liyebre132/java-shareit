@@ -73,7 +73,7 @@ class BookingRepositoryTests {
     }
 
     @Test
-    void findAllByBookerTest() {
+    void findAllByBookerIdTest() {
         userRepository.save(user);
         itemRepository.save(item);
         userRepository.save(user2);
