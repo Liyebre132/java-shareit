@@ -12,7 +12,6 @@ import ru.practicum.shareit.booking.BookingController;
 import ru.practicum.shareit.booking.BookingDto;
 import ru.practicum.shareit.booking.BookingResult;
 import ru.practicum.shareit.booking.BookingService;
-import ru.practicum.shareit.booking.exception.BookingIncorrectStateException;
 import ru.practicum.shareit.item.ItemDto;
 import ru.practicum.shareit.item.ItemResult;
 import ru.practicum.shareit.user.UserDto;

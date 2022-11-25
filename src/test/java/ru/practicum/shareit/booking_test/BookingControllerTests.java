@@ -15,8 +15,6 @@ import ru.practicum.shareit.booking.exception.BookingNotFoundException;
 import ru.practicum.shareit.item.ItemController;
 import ru.practicum.shareit.item.ItemDto;
 import ru.practicum.shareit.item.ItemResult;
-import ru.practicum.shareit.item.exception.ItemNotFoundException;
-import ru.practicum.shareit.request.exception.ItemRequestNotValidException;
 import ru.practicum.shareit.user.UserController;
 import ru.practicum.shareit.user.UserDto;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
