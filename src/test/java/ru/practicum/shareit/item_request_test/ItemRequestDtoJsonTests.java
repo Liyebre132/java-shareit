@@ -5,24 +5,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
-import ru.practicum.shareit.request.ItemRequestDto;
+import ru.practicum.shareit.request.ItemRequestResult;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @JsonTest
-class ItemRequestDtoTests {
+class ItemRequestDtoJsonTests {
     @Autowired
-    JacksonTester<ItemRequestDto> json;
+    JacksonTester<ItemRequestResult> json;
 
     @Test
-    void testItemRequestDto() throws Exception {
-        ItemRequestDto itemRequestDto = new ItemRequestDto(1L,
+    void testItemRequestResult() throws Exception {
+        ItemRequestResult itemRequestDto = new ItemRequestResult(
+                1L,
                 "desc",
-                LocalDateTime.now());
+                LocalDateTime.now(),
+                new ArrayList<>()
+        );
 
-        JsonContent<ItemRequestDto> result = json.write(itemRequestDto);
+        JsonContent<ItemRequestResult> result = json.write(itemRequestDto);
 
         assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
         assertThat(result).extractingJsonPathStringValue("$.description")

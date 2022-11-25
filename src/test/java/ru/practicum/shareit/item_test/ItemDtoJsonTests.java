@@ -5,28 +5,35 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
-import ru.practicum.shareit.item.ItemDto;
+import ru.practicum.shareit.item.ItemResult;
+
+import java.util.ArrayList;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @JsonTest
 class ItemDtoJsonTests {
     @Autowired
-    JacksonTester<ItemDto> json;
+    JacksonTester<ItemResult> json;
 
     @Test
-    void testItemDto() throws Exception {
-        ItemDto itemDto = new ItemDto(
-                "name",
-                "description",
+    void testItemResult() throws Exception {
+        ItemResult item = new ItemResult(
+                1L,
+                "item",
+                "desc",
                 true,
+                null,
+                null,
+                new ArrayList<>(),
                 null
         );
 
-        JsonContent<ItemDto> result = json.write(itemDto);
+        JsonContent<ItemResult> result = json.write(item);
 
-        assertThat(result).extractingJsonPathStringValue("$.name").isEqualTo("name");
-        assertThat(result).extractingJsonPathStringValue("$.description").isEqualTo("description");
+        assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
+        assertThat(result).extractingJsonPathStringValue("$.name").isEqualTo("item");
+        assertThat(result).extractingJsonPathStringValue("$.description").isEqualTo("desc");
         assertThat(result).extractingJsonPathBooleanValue("$.available").isTrue();
     }
 }

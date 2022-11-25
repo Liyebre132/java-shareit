@@ -13,7 +13,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "WHERE (UPPER(i.name) LIKE UPPER(CONCAT('%', ?1, '%')) " +
             "OR UPPER(i.description) LIKE UPPER(CONCAT('%', ?1, '%'))) " +
             "AND i.available = true")
-    List<Item> search(String text, Pageable pageable);
+    Page<Item> search(String text, Pageable pageable);
 
     Page<Item> findAllByOwner_Id(long userId, Pageable pageable);
 

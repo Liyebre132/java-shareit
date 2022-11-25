@@ -15,17 +15,18 @@ import ru.practicum.shareit.request.ItemRequestService;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = ItemRequestController.class)
-class ItemRequestControllerMockTests {
+class ItemRequestControllerMockMvcTests {
     @Autowired
     private ObjectMapper mapper;
 
@@ -35,17 +36,28 @@ class ItemRequestControllerMockTests {
     @Autowired
     private MockMvc mvc;
 
+    private ItemRequestDto itemRequestDto;
+
     private ItemRequestResult itemRequestResult;
 
     @BeforeEach
     void init() {
-        ItemRequestDto itemRequestDto = new ItemRequestDto(1L,
-                "item request description",
-                LocalDateTime.now());
-        itemRequestResult = new ItemRequestResult();
-        itemRequestResult.setId(itemRequestDto.getId());
-        itemRequestResult.setDescription(itemRequestDto.getDescription());
-        itemRequestResult.setCreated(itemRequestDto.getCreated());
+        itemRequestDto = new ItemRequestDto(1L, "desc", LocalDateTime.now());
+        itemRequestResult = new ItemRequestResult(1L, "desc", LocalDateTime.now(), new ArrayList<>());
+    }
+
+    @Test
+    void createTest() throws Exception {
+        when(itemRequestService.addNewItemRequest(anyLong(), any()))
+                .thenReturn(itemRequestDto);
+        mvc.perform(post("/requests")
+                        .content(mapper.writeValueAsString(itemRequestDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 1L)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(mapper.writeValueAsString(itemRequestDto)));
     }
 
     @Test

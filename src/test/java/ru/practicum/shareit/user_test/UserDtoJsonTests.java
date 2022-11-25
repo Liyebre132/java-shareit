@@ -16,12 +16,10 @@ class UserDtoJsonTests {
 
     @Test
     void testUserDto() throws Exception {
-        UserDto userDto = new UserDto(1L, "name", "email@ya.ru");
-
+        UserDto userDto = new UserDto(1L,"testUser", "e@mail.ru");
         JsonContent<UserDto> result = json.write(userDto);
-
         assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
-        assertThat(result).extractingJsonPathStringValue("$.name").isEqualTo("name");
-        assertThat(result).extractingJsonPathStringValue("$.email").isEqualTo("email@ya.ru");
+        assertThat(result).extractingJsonPathStringValue("$.name").isEqualTo("testUser");
+        assertThat(result).extractingJsonPathStringValue("$.email").isEqualTo("e@mail.ru");
     }
 }

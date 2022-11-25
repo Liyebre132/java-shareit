@@ -23,74 +23,87 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = UserController.class)
-class UserControllerMockTests {
+class UserControllerMockMvcTests {
+
     @Autowired
     private ObjectMapper mapper;
-
-    @MockBean
-    private UserService userService;
 
     @Autowired
     private MockMvc mvc;
 
-    private UserDto userDto;
+    @MockBean
+    private UserService userService;
+
+    UserDto user;
 
     @BeforeEach
     void init() {
-        userDto = new UserDto(1L, "name", "email@ya.ru");
+        user = new UserDto(1L,"testUser", "e@mail.ru");
     }
 
     @Test
-    void getAllTest() throws Exception {
-        when(userService.getAll())
-                .thenReturn(List.of(userDto));
-        mvc.perform(get("/users")
+    void addTest() throws Exception {
+        when(userService.addNewUser(any()))
+                .thenReturn(user);
+        mvc.perform(post("/users")
+                        .content(mapper.writeValueAsString(user))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("X-Sharer-User-Id", 1L)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().json(mapper.writeValueAsString(List.of(userDto))));
+                .andExpect(content().json(mapper.writeValueAsString(user)));
+    }
+
+    @Test
+    void updateTest() throws Exception {
+        when(userService.update(anyLong(), any()))
+                .thenReturn(user);
+        mvc.perform(patch("/users/1")
+                        .content(mapper.writeValueAsString(user))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 1L)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(mapper.writeValueAsString(user)));
     }
 
     @Test
     void getByIdTest() throws Exception {
         when(userService.getById(anyLong()))
-                .thenReturn(userDto);
+                .thenReturn(user);
         mvc.perform(get("/users/1")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("X-Sharer-User-Id", 1L)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().json(mapper.writeValueAsString(userDto)));
+                .andExpect(content().json(mapper.writeValueAsString(user)));
     }
 
     @Test
-    void createTest() throws Exception {
-        when(userService.addNewUser(any()))
-                .thenReturn(userDto);
-        mvc.perform(post("/users")
-                        .content(mapper.writeValueAsString(userDto))
+    void getAllTest() throws Exception {
+        when(userService.getAll())
+                .thenReturn(List.of(user));
+        mvc.perform(get("/users")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("X-Sharer-User-Id", 1L)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().json(mapper.writeValueAsString(userDto)));
+                .andExpect(content().json(mapper.writeValueAsString(List.of(user))));
     }
 
     @Test
-    void updateTest() throws Exception {
-        when(userService.update(anyLong(), any()))
-                .thenReturn(userDto);
-        mvc.perform(patch("/users/1")
-                        .content(mapper.writeValueAsString(userDto))
+    void deleteTest() throws Exception {
+        userService.delete(anyLong());
+        mvc.perform(delete("/users/1")
+                        .content(mapper.writeValueAsString(user))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("X-Sharer-User-Id", 1L)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(mapper.writeValueAsString(userDto)));
+                .andExpect(status().isOk());
     }
 }

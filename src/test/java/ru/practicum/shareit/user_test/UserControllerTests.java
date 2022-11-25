@@ -19,17 +19,17 @@ class UserControllerTests {
     @Autowired
     private UserController userController;
 
-    private UserDto user;
+    UserDto user;
 
     @BeforeEach
     void init() {
         user = new UserDto();
-        user.setName("name");
-        user.setEmail("user@ya.ru");
+        user.setName("testUser");
+        user.setEmail("e@mail.ru");
     }
 
     @Test
-    void createTest() {
+    void addTest() {
         UserDto userDto = userController.add(user);
         assertEquals(userDto.getId(), userController.getById(userDto.getId()).getId());
     }
@@ -37,28 +37,39 @@ class UserControllerTests {
     @Test
     void updateTest() {
         userController.add(user);
-        UserDto userDto = user;
-        userDto.setName("update name");
-        userDto.setEmail("updateEmail@ya.ru");
+        UserDto userDto = new UserDto(1L, "updateName", "update@mail.ru");
         userController.update(1L, userDto);
         assertEquals(userDto.getEmail(), userController.getById(1L).getEmail());
     }
 
     @Test
-    void updateByWrongUserTest() {
-        assertThrows(EntityNotFoundException.class, () -> userController.update(99L, user));
+    void updateWrongUserTest() {
+        assertThrows(EntityNotFoundException.class, () -> userController.update(100L, user));
     }
 
     @Test
-    void deleteTest() {
-        UserDto userDto = userController.add(user);
-        assertEquals(1, userController.getAll().size());
-        userController.delete(userDto.getId());
-        assertEquals(0, userController.getAll().size());
+    void getByIdTest() {
+        userController.add(user);
+        assertEquals(user.getEmail(), userController.getById(1L).getEmail());
     }
 
     @Test
     void getByWrongIdTest() {
-        assertThrows(EntityNotFoundException.class, () -> userController.getById(99L));
+        assertThrows(EntityNotFoundException.class, () -> userController.getById(100L));
+    }
+
+    @Test
+    void getAllTest() {
+        assertEquals(0, userController.getAll().size());
+        userController.add(user);
+        assertEquals(1, userController.getAll().size());
+    }
+
+    @Test
+    void deleteTest() {
+        userController.add(user);
+        assertEquals(1, userController.getAll().size());
+        userController.delete(1L);
+        assertEquals(0, userController.getAll().size());
     }
 }

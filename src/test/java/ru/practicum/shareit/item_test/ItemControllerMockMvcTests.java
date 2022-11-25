@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.item.*;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -20,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = ItemController.class)
-class ItemControllerMockTests {
+class ItemControllerMockMvcTests {
     @Autowired
     private ObjectMapper mapper;
 
@@ -38,43 +39,50 @@ class ItemControllerMockTests {
 
     @BeforeEach
     void init() {
-        itemDto = new ItemDto("item name", "item description", true, 0L);
-
-        itemResult = new ItemResult();
-        itemResult.setName(itemDto.getName());
-        itemResult.setDescription(itemDto.getDescription());
-        itemResult.setAvailable(itemDto.getAvailable());
-        itemResult.setRequestId(itemDto.getRequestId());
+        itemDto = new ItemDto("name", "desc", true, null);
 
         commentDto = new CommentDto();
-        commentDto.setId(1L);
+        commentDto.setItemId(1L);
         commentDto.setText("text of comment");
+
+        itemResult = new ItemResult(
+                1L,
+                "name",
+                "desc",
+                true,
+                null,
+                null,
+                new ArrayList<>(),
+                null
+        );
     }
 
     @Test
-    void getAllTest() throws Exception {
-        when(itemService.getAllByUser(anyLong(), anyInt(), anyInt()))
-                .thenReturn(List.of(itemResult));
-        mvc.perform(get("/items")
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1L)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(mapper.writeValueAsString(List.of(itemDto))));
-    }
-
-    @Test
-    void getByIdTest() throws Exception {
-        when(itemService.getById(anyLong(), anyLong()))
+    void addTest() throws Exception {
+        when(itemService.addNewItem(anyLong(), any()))
                 .thenReturn(itemResult);
-        mvc.perform(get("/items/1")
+        mvc.perform(post("/items")
+                        .content(mapper.writeValueAsString(itemDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("X-Sharer-User-Id", 1L)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().json(mapper.writeValueAsString(itemDto)));
+                .andExpect(content().json(mapper.writeValueAsString(itemResult)));
+    }
+
+    @Test
+    void updateTest() throws Exception {
+        when(itemService.update(anyLong(), anyLong(), any()))
+                .thenReturn(itemResult);
+        mvc.perform(patch("/items/1")
+                        .content(mapper.writeValueAsString(itemDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 1L)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(mapper.writeValueAsString(itemResult)));
     }
 
     @Test
@@ -87,11 +95,37 @@ class ItemControllerMockTests {
                         .header("X-Sharer-User-Id", 1L)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().json(mapper.writeValueAsString(List.of(itemDto))));
+                .andExpect(content().json(mapper.writeValueAsString(List.of(itemResult))));
     }
 
     @Test
-    void createCommentTest() throws Exception {
+    void getAllTest() throws Exception {
+        when(itemService.getAllByUser(anyLong(), anyInt(), anyInt()))
+                .thenReturn(List.of(itemResult));
+        mvc.perform(get("/items")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 1L)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(mapper.writeValueAsString(List.of(itemResult))));
+    }
+
+    @Test
+    void getByIdTest() throws Exception {
+        when(itemService.getById(anyLong(), anyLong()))
+                .thenReturn(itemResult);
+        mvc.perform(get("/items/1")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 1L)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(mapper.writeValueAsString(itemResult)));
+    }
+
+    @Test
+    void addCommentTest() throws Exception {
         when(itemService.addComment(anyLong(), anyLong(), any()))
                 .thenReturn(commentDto);
         mvc.perform(post("/items/1/comment")
@@ -102,5 +136,17 @@ class ItemControllerMockTests {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(mapper.writeValueAsString(commentDto)));
+    }
+
+    @Test
+    void deleteTest() throws Exception {
+        itemService.delete(anyLong(), anyLong());
+        mvc.perform(delete("/items/1")
+                        .content(mapper.writeValueAsString(itemDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 1L)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 }

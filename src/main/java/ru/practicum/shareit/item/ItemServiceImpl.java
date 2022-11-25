@@ -9,8 +9,12 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.*;
 import ru.practicum.shareit.item.exception.CommentIncorrectException;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.ItemRequestRepository;
+import ru.practicum.shareit.request.exception.ItemRequestNotFoundException;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.exception.UserNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -29,17 +33,27 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository itemRequestRepository;
 
     @Override
     @Transactional
     public ItemResult addNewItem(long userId, ItemDto itemDto) {
-        User user = userRepository.getById(userId);
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isEmpty()) {
+            throw new UserNotFoundException("Такой пользователь не найден");
+        }
+        if (itemDto.getRequestId() != null) {
+            Optional<ItemRequest> itemRequest = itemRequestRepository.findById(itemDto.getRequestId());
+            if (itemRequest.isEmpty()) {
+                throw new ItemRequestNotFoundException("Такой запрос на вещь не найден");
+            }
+        }
         ItemResult itemResult = new ItemResult();
         itemResult.setName(itemDto.getName());
         itemResult.setDescription(itemDto.getDescription());
         itemResult.setAvailable(itemDto.getAvailable());
         itemResult.setRequestId(itemDto.getRequestId());
-        Item item = itemRepository.save(ItemMapper.toItem(itemResult, user));
+        Item item = itemRepository.save(ItemMapper.toItem(itemResult, user.get()));
         return ItemMapper.toItemResult(item);
     }
 
@@ -140,7 +154,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemResult> search(String text, int from, int size) {
-        return ItemMapper.mapToItemResult(itemRepository.search(text, PageRequest.of(from / size, size)));
+        return ItemMapper.mapToItemResult(itemRepository.search(text, PageRequest.of(from / size, size)).toList());
     }
 
     @Override

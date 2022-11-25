@@ -2,7 +2,7 @@ package ru.practicum.shareit.booking;
 
 import java.util.List;
 
-interface BookingService {
+public interface BookingService {
     BookingResult addNewBooking(long userId, BookingDto bookingDto);
 
     BookingResult approved(long userId, long bookingId, boolean approved);
