@@ -24,12 +24,6 @@ public class ItemRequestMapper {
         return result;
     }
 
-    public static List<ItemRequestDto> mapToItemRequestDto(List<ItemRequest> itemRequests) {
-        return itemRequests.stream()
-                .map(ItemRequestMapper::toItemRequestDto)
-                .collect(Collectors.toList());
-    }
-
     public static List<ItemRequestResult> mapToItemRequestResult(List<ItemRequest> itemRequests) {
         return itemRequests.stream()
                 .map(ItemRequestMapper::toItemRequestResult)
