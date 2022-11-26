@@ -7,6 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.request.ItemRequestController;
 import ru.practicum.shareit.request.ItemRequestDto;
+import ru.practicum.shareit.request.ItemRequestResult;
+import ru.practicum.shareit.request.exception.ItemRequestNotFoundException;
 import ru.practicum.shareit.request.exception.ItemRequestNotValidException;
 import ru.practicum.shareit.user.UserController;
 import ru.practicum.shareit.user.UserDto;
@@ -51,6 +53,28 @@ class ItemRequestControllerTests {
     }
 
     @Test
+    void getByIdTest() {
+        UserDto user = userController.add(userDto);
+        ItemRequestDto itemRequest = itemRequestController.add(user.getId(), itemRequestDto);
+        assertEquals(1L, itemRequestController.getById(user.getId(), itemRequest.getId()).getId());
+    }
+
+    @Test
+    void getByIdWithNotUserTest() {
+        UserDto user = userController.add(userDto);
+        ItemRequestDto itemRequest = itemRequestController.add(user.getId(), itemRequestDto);
+        assertThrows(UserNotFoundException.class, () ->
+                itemRequestController.getById(2L, itemRequest.getId()));
+    }
+
+    @Test
+    void getByIdWithNotRequestTest() {
+        UserDto user = userController.add(userDto);
+        assertThrows(ItemRequestNotFoundException.class, () ->
+                itemRequestController.getById(user.getId(), 2L));
+    }
+
+    @Test
     void getAllByUserTest() {
         UserDto user = userController.add(userDto);
         itemRequestController.add(user.getId(), itemRequestDto);
@@ -83,6 +107,7 @@ class ItemRequestControllerTests {
 
     @Test
     void getAllWithWrongFrom() {
-        assertThrows(ItemRequestNotValidException.class, () -> itemRequestController.getAll(-1, 10, 1L));
+        assertThrows(ItemRequestNotValidException.class, () ->
+                itemRequestController.getAll(-1, 10, 1L));
     }
 }

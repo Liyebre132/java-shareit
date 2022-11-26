@@ -12,19 +12,23 @@ import java.util.ArrayList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @JsonTest
-class ItemDtoJsonTests {
+class ItemResultJsonTests {
     @Autowired
     JacksonTester<ItemResult> json;
 
     @Test
     void testItemResult() throws Exception {
+
+        ItemResult.LastBooking lastBooking = new ItemResult.LastBooking(1L, 1L);
+        ItemResult.NextBooking nextBooking = new ItemResult.NextBooking(2L, 1L);
+
         ItemResult item = new ItemResult(
                 1L,
                 "item",
                 "desc",
                 true,
-                null,
-                null,
+                nextBooking,
+                lastBooking,
                 new ArrayList<>(),
                 null
         );

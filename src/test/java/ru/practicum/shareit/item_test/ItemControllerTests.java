@@ -160,7 +160,9 @@ class ItemControllerTests {
         bookingController.approved(user.getId(), booking2.getId(), true);
 
         assertEquals(1L, itemController.getById(1L, 1L).getLastBooking().getId());
+        assertEquals(2L, itemController.getById(1L, 1L).getLastBooking().getBookerId());
         assertEquals(2L, itemController.getById(1L, 1L).getNextBooking().getId());
+        assertEquals(2L, itemController.getById(1L, 1L).getNextBooking().getBookerId());
     }
 
     @Test
@@ -175,6 +177,56 @@ class ItemControllerTests {
         assertEquals(0, itemController.getAll(1L, 0, 10).size());
         itemController.add(1L, itemDto);
         assertEquals(1, itemController.getAll(1L, 0, 10).size());
+    }
+
+    @Test
+    void getAllWithNextAndLastBookingTest() {
+        UserDto user = userController.add(userDto);
+        ItemResult item = itemController.add(1L, itemDto);
+        UserDto user2 = userController.add(new UserDto(null, "user2", "fff@mail.ru"));
+        BookingResult booking = bookingController.add(user2.getId(), new BookingDto(
+                LocalDateTime.of(2021, 12, 13, 10, 30),
+                LocalDateTime.of(2022, 2, 1, 10, 30),
+                item.getId()
+        ));
+        bookingController.approved(user.getId(), booking.getId(), true);
+        BookingResult booking2 = bookingController.add(user2.getId(), new BookingDto(
+                LocalDateTime.of(2023, 2, 2, 10, 30),
+                LocalDateTime.of(2023, 3, 2, 10, 30),
+                item.getId()
+        ));
+        bookingController.approved(user.getId(), booking2.getId(), true);
+
+        assertEquals(1L,
+                itemController.getAll(1L, 0, 10).get(0).getLastBooking().getId());
+        assertEquals(2L,
+                itemController.getAll(1L, 0, 10).get(0).getLastBooking().getBookerId());
+        assertEquals(2L,
+                itemController.getAll(1L, 0, 10).get(0).getNextBooking().getId());
+    }
+
+    @Test
+    void getAllWithCommentsTest() {
+        UserDto user = userController.add(userDto);
+        ItemResult itemResult = itemController.add(user.getId(), itemDto);
+        UserDto user2 = userController.add(new UserDto(null, "user2", "fff@mail.ru"));
+        BookingResult booking = bookingController.add(user2.getId(), new BookingDto(
+                LocalDateTime.of(2021, 12, 13, 10, 30),
+                LocalDateTime.of(2022, 2, 1, 10, 30),
+                itemResult.getId()
+        ));
+        bookingController.approved(user.getId(), booking.getId(), true);
+        CommentDto commentDto = new CommentDto();
+        commentDto.setText("comment");
+        itemController.addComment(user2.getId(), itemResult.getId(), commentDto);
+
+        assertEquals(1,
+                itemController.getAll(1L, 0, 10).get(0).getComments().size());
+    }
+
+    @Test
+    void getAllWithIncorrectParamTest() {
+        assertThrows(ItemNotValidException.class, () -> itemController.getAll(1L, -1, -1));
     }
 
     @Test

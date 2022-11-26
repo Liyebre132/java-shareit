@@ -37,6 +37,7 @@ class ItemRequestRepositoryTests {
         itemRequestRepository.save(itemRequest);
         List<ItemRequest> items = itemRequestRepository.findByRequestor_Id(user.getId());
         assertThat(items.size(), equalTo(1));
+        assertThat(items.get(0).getRequestor().getId(), equalTo(1L));
     }
 
     @Test

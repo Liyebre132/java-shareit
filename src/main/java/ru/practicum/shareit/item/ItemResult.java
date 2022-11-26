@@ -39,5 +39,4 @@ public class ItemResult {
         private Long bookerId;
     }
 
-
 }

@@ -198,10 +198,10 @@ class BookingControllerTests {
         UserDto user2 = userController.add(userDto2);
         bookingController.add(user2.getId(), bookingDto);
         assertThrows(BookingIncorrectStateException.class, () ->
-                bookingController.getAllByBooker(1L, "LOL", 0, 10).size());
+                bookingController.getAllByBooker(1L, "UNSUPPORTED_STATUS", 0, 10));
 
         assertThrows(BookingIncorrectStateException.class, () ->
-                bookingController.getAllByOwner(1L, "KEK", 0, 10).size());
+                bookingController.getAllByOwner(1L, "UNSUPPORTED_STATUS", 0, 10));
     }
 
     @Test
