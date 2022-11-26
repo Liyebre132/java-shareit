@@ -13,7 +13,6 @@ import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.item.exception.ItemNotValidException;
 import ru.practicum.shareit.request.exception.ItemRequestNotFoundException;
 import ru.practicum.shareit.request.exception.ItemRequestNotValidException;
-import ru.practicum.shareit.user.exception.UserExistsException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 
 import javax.persistence.EntityNotFoundException;
@@ -120,16 +119,6 @@ public class Handler {
         log.info("Переданы неверные данные для получения всех бронирований");
         return Map.of(
                 "error", "BAD_REQUEST",
-                "errorMessage", e.getMessage()
-        );
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public Map<String, String> userExists(final UserExistsException e) {
-        log.info("Пользователь пытался зарегистрироваться на занятный email");
-        return Map.of(
-                "error", "CONFLICT",
                 "errorMessage", e.getMessage()
         );
     }

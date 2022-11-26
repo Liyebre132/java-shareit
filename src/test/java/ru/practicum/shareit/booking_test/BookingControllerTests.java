@@ -9,10 +9,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.booking.BookingController;
 import ru.practicum.shareit.booking.BookingDto;
 import ru.practicum.shareit.booking.BookingResult;
-import ru.practicum.shareit.booking.exception.BookingDateException;
-import ru.practicum.shareit.booking.exception.BookingIncorrectApprovedException;
-import ru.practicum.shareit.booking.exception.BookingNotAvailableException;
-import ru.practicum.shareit.booking.exception.BookingNotFoundException;
+import ru.practicum.shareit.booking.exception.*;
 import ru.practicum.shareit.item.ItemController;
 import ru.practicum.shareit.item.ItemDto;
 import ru.practicum.shareit.item.ItemResult;
@@ -192,6 +189,20 @@ class BookingControllerTests {
                 bookingController.getAllByOwner(user.getId(), "REJECTED", 0, 10).size());
         assertEquals(0,
                 bookingController.getAllByOwner(user.getId(), "PAST", 0, 10).size());
+    }
+
+    @Test
+    void getAllByUserWithIncorrectStateTest() {
+        UserDto user = userController.add(userDto);
+        itemController.add(user.getId(), itemDto);
+        UserDto user2 = userController.add(userDto2);
+        bookingController.add(user2.getId(), bookingDto);
+        
+        assertThrows(BookingIncorrectStateException.class, () ->
+                bookingController.getAllByBooker(1L, "LOL", 0, 10).size());
+
+        assertThrows(BookingIncorrectStateException.class, () ->
+                bookingController.getAllByOwner(1L, "KEK", 0, 10).size());
     }
 
     @Test

@@ -32,10 +32,7 @@ class ItemRequestRepositoryTests {
         user.setEmail("e@mail.ru");
         User createdUser = userRepository.save(user);
 
-        ItemRequest itemRequest = new ItemRequest();
-        itemRequest.setRequestor(createdUser);
-        itemRequest.setDescription("desc");
-        itemRequest.setCreated(LocalDateTime.now());
+        ItemRequest itemRequest = new ItemRequest(1L, "desc", createdUser, LocalDateTime.now());
 
         itemRequestRepository.save(itemRequest);
         List<ItemRequest> items = itemRequestRepository.findByRequestor_Id(user.getId());

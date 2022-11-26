@@ -12,7 +12,6 @@ import ru.practicum.shareit.booking.BookingController;
 import ru.practicum.shareit.booking.BookingDto;
 import ru.practicum.shareit.booking.BookingResult;
 import ru.practicum.shareit.booking.BookingService;
-import ru.practicum.shareit.item.ItemDto;
 import ru.practicum.shareit.item.ItemResult;
 import ru.practicum.shareit.user.UserDto;
 
@@ -27,6 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.practicum.shareit.booking.BookingStatus.APPROVED;
+import static ru.practicum.shareit.booking.BookingStatus.WAITING;
 
 @WebMvcTest(controllers = BookingController.class)
 class BookingControllerMockMvcTests {
@@ -41,8 +41,6 @@ class BookingControllerMockMvcTests {
 
     private UserDto userDto;
 
-    private ItemDto itemDto;
-
     private ItemResult itemResult;
 
     private BookingDto bookingDto;
@@ -52,7 +50,6 @@ class BookingControllerMockMvcTests {
     @BeforeEach
     void init() {
         userDto = new UserDto(1L, "name", "user@ya.ru");
-        itemDto = new ItemDto("name", "desc", true, null);
         itemResult = new ItemResult(
                 1L,
                 "name",
@@ -66,10 +63,14 @@ class BookingControllerMockMvcTests {
                 LocalDateTime.of(2022, 12, 12, 10, 0),
                 LocalDateTime.of(2022, 12, 20, 10, 0),
                 itemResult.getId());
-        bookingResult = new BookingResult();
-        bookingResult.setItem(new BookingResult.Item(bookingDto.getItemId(), itemResult.getName()));
-        bookingResult.setStart(bookingDto.getStart());
-        bookingResult.setEnd(bookingDto.getEnd());
+        bookingResult = new BookingResult(
+                1L,
+                bookingDto.getStart(),
+                bookingDto.getEnd(),
+                new BookingResult.Item(itemResult.getId(), itemResult.getName()),
+                new BookingResult.Booker(userDto.getId(), userDto.getName()),
+                WAITING
+        );
     }
 
     @Test
