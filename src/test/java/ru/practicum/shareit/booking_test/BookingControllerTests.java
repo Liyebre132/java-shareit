@@ -197,12 +197,20 @@ class BookingControllerTests {
         itemController.add(user.getId(), itemDto);
         UserDto user2 = userController.add(userDto2);
         bookingController.add(user2.getId(), bookingDto);
-        
         assertThrows(BookingIncorrectStateException.class, () ->
                 bookingController.getAllByBooker(1L, "LOL", 0, 10).size());
 
         assertThrows(BookingIncorrectStateException.class, () ->
                 bookingController.getAllByOwner(1L, "KEK", 0, 10).size());
+    }
+
+    @Test
+    void getAllByUserWithIncorrectParams() {
+        assertThrows(BookingNotValidException.class, () ->
+                bookingController.getAllByBooker(1L, "ALL", -1, -1).size());
+
+        assertThrows(BookingNotValidException.class, () ->
+                bookingController.getAllByOwner(1L, "ALL", -1, -1).size());
     }
 
     @Test
