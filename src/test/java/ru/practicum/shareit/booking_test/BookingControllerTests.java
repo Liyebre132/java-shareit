@@ -22,8 +22,7 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static ru.practicum.shareit.booking.BookingStatus.APPROVED;
-import static ru.practicum.shareit.booking.BookingStatus.WAITING;
+import static ru.practicum.shareit.booking.BookingStatus.*;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -130,6 +129,20 @@ class BookingControllerTests {
     }
 
     @Test
+    void approveRejectedTest() {
+        UserDto user = userController.add(userDto);
+        ItemResult item = itemController.add(user.getId(), itemDto);
+        UserDto user2 = userController.add(userDto2);
+        BookingDto booking = new BookingDto();
+        booking.setStart(LocalDateTime.of(2022, 10, 24, 12, 30));
+        booking.setEnd(LocalDateTime.of(2022, 11, 10, 13, 0));
+        booking.setItemId(item.getId());
+        BookingResult bookingResult = bookingController.add(user2.getId(), booking);
+        bookingController.approved(user.getId(), bookingResult.getId(), false);
+        assertEquals(REJECTED, bookingController.getById(user2.getId(), bookingResult.getId()).getStatus());
+    }
+
+    @Test
     void approveToWrongBookingTest() {
         assertThrows(EntityNotFoundException.class, () ->
                 bookingController.approved(1L, 1L, true));
@@ -233,6 +246,10 @@ class BookingControllerTests {
         itemController.add(user.getId(), itemDto);
         UserDto user1 = userController.add(userDto2);
         bookingController.add(user1.getId(), bookingDto);
-        assertThrows(EntityNotFoundException.class, () -> bookingController.getById(1L, 10L));
+
+        UserDto user3 = new UserDto(3L, "user3", "m@mail.ru");
+        userController.add(user3);
+
+        assertThrows(BookingNotFoundException.class, () -> bookingController.getById(3L, 1L));
     }
 }

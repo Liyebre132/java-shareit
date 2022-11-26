@@ -25,14 +25,16 @@ public class ItemResult {
 
     private Long requestId;
 
-    @Data
+    @Getter
+    @Setter
     @AllArgsConstructor
     public static class NextBooking {
         private Long id;
         private Long bookerId;
     }
 
-    @Data
+    @Getter
+    @Setter
     @AllArgsConstructor
     public static class LastBooking {
         private Long id;

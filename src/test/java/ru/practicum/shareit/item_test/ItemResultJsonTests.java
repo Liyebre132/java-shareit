@@ -39,5 +39,20 @@ class ItemResultJsonTests {
         assertThat(result).extractingJsonPathStringValue("$.name").isEqualTo("item");
         assertThat(result).extractingJsonPathStringValue("$.description").isEqualTo("desc");
         assertThat(result).extractingJsonPathBooleanValue("$.available").isTrue();
+        assertThat(result).extractingJsonPathValue("$.lastBooking.id").isEqualTo(1);
+        assertThat(result).extractingJsonPathValue("$.nextBooking.id").isEqualTo(2);
+
+        lastBooking.setId(3L);
+        lastBooking.setBookerId(2L);
+        nextBooking.setId(4L);
+        nextBooking.setBookerId(2L);
+
+        item.setLastBooking(lastBooking);
+        item.setNextBooking(nextBooking);
+
+        JsonContent<ItemResult> result2 = json.write(item);
+
+        assertThat(result2).extractingJsonPathValue("$.lastBooking.id").isEqualTo(3);
+        assertThat(result2).extractingJsonPathValue("$.nextBooking.id").isEqualTo(4);
     }
 }

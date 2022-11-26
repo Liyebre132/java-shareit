@@ -110,6 +110,7 @@ class ItemControllerTests {
         ItemDto updateItem = new ItemDto();
         updateItem.setName("updateName");
         updateItem.setDescription("updateDesc");
+        updateItem.setAvailable(false);
         itemController.update(1L, 1L, updateItem);
         assertEquals(updateItem.getDescription(), itemController.getById(1L, 1L).getDescription());
         assertEquals(updateItem.getName(), itemController.getById(1L, 1L).getName());
