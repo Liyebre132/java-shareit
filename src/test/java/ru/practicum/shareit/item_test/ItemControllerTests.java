@@ -117,6 +117,26 @@ class ItemControllerTests {
     }
 
     @Test
+    void updateNullAndEmptyDataTest() {
+        userController.add(userDto);
+        itemController.add(1L, itemDto);
+        ItemDto updateItem = new ItemDto();
+
+        ItemDto updateItem2 = new ItemDto();
+        updateItem2.setName("");
+        updateItem2.setDescription("");
+        updateItem2.setAvailable(false);
+
+        itemController.update(1L, 1L, updateItem);
+        assertEquals(itemDto.getDescription(), itemController.getById(1L, 1L).getDescription());
+        assertEquals(itemDto.getName(), itemController.getById(1L, 1L).getName());
+
+        itemController.update(1L, 1L, updateItem2);
+        assertEquals(itemDto.getDescription(), itemController.getById(1L, 1L).getDescription());
+        assertEquals(itemDto.getName(), itemController.getById(1L, 1L).getName());
+    }
+
+    @Test
     void updateWrongItemTest() {
         assertThrows(EntityNotFoundException.class, () -> itemController.update(1L, 1L, itemDto));
     }
@@ -146,12 +166,19 @@ class ItemControllerTests {
         ItemResult item = itemController.add(1L, itemDto);
 
         UserDto user2 = userController.add(new UserDto(null, "user2", "fff@mail.ru"));
+
+        assertEquals(null, itemController.getById(1L, 1L).getLastBooking());
+        assertEquals(null, itemController.getById(1L, 1L).getNextBooking());
+
         BookingResult booking = bookingController.add(user2.getId(), new BookingDto(
                 LocalDateTime.of(2021, 12, 13, 10, 30),
                 LocalDateTime.of(2022, 2, 1, 10, 30),
                 item.getId()
         ));
         bookingController.approved(user.getId(), booking.getId(), true);
+
+        assertEquals(1L, itemController.getById(1L, 1L).getLastBooking().getId());
+        assertEquals(null, itemController.getById(1L, 1L).getNextBooking());
 
         BookingResult booking2 = bookingController.add(user2.getId(), new BookingDto(
                 LocalDateTime.of(2023, 2, 2, 10, 30),
@@ -227,6 +254,8 @@ class ItemControllerTests {
 
     @Test
     void getAllWithIncorrectParamTest() {
+        assertThrows(ItemNotValidException.class, () -> itemController.getAll(1L, 0, -1));
+        assertThrows(ItemNotValidException.class, () -> itemController.getAll(1L, -1, 10));
         assertThrows(ItemNotValidException.class, () -> itemController.getAll(1L, -1, -1));
     }
 
@@ -247,6 +276,8 @@ class ItemControllerTests {
     @Test
     void searchWrongDataTest() {
         assertThrows(ItemNotValidException.class, () -> itemController.search("t", -1, 10));
+        assertThrows(ItemNotValidException.class, () -> itemController.search("t", -1, -1));
+        assertThrows(ItemNotValidException.class, () -> itemController.search("t", 0, -1));
     }
 
     @Test

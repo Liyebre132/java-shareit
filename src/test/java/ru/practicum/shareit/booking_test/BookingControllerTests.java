@@ -170,11 +170,12 @@ class BookingControllerTests {
     }
 
     @Test
-    void getAllByUserTest() {
+    void getAllByOwnerAndBookerTest() {
         UserDto user = userController.add(userDto);
         itemController.add(user.getId(), itemDto);
         UserDto user2 = userController.add(userDto2);
         BookingResult booking = bookingController.add(user2.getId(), bookingDto);
+
         assertEquals(1,
                 bookingController.getAllByBooker(user2.getId(), "WAITING", 0, 10).size());
         assertEquals(1,
@@ -202,28 +203,39 @@ class BookingControllerTests {
                 bookingController.getAllByOwner(user.getId(), "REJECTED", 0, 10).size());
         assertEquals(0,
                 bookingController.getAllByOwner(user.getId(), "PAST", 0, 10).size());
-    }
-
-    @Test
-    void getAllByUserWithIncorrectStateTest() {
-        UserDto user = userController.add(userDto);
-        itemController.add(user.getId(), itemDto);
-        UserDto user2 = userController.add(userDto2);
-        bookingController.add(user2.getId(), bookingDto);
-        assertThrows(BookingIncorrectStateException.class, () ->
-                bookingController.getAllByBooker(1L, "UNSUPPORTED_STATUS", 0, 10));
 
         assertThrows(BookingIncorrectStateException.class, () ->
-                bookingController.getAllByOwner(1L, "UNSUPPORTED_STATUS", 0, 10));
+                bookingController.getAllByBooker(1L, "SSSS", 0, 10));
+
+        assertThrows(BookingIncorrectStateException.class, () ->
+                bookingController.getAllByOwner(1L, "SSS", 0, 10));
+
+        assertThrows(BookingIncorrectStateException.class, () ->
+                bookingController.getAllByBooker(user2.getId(), "SSSS", 0, 10));
+
+        assertThrows(BookingIncorrectStateException.class, () ->
+                bookingController.getAllByOwner(user.getId(), "SSS", 0, 10));
     }
 
     @Test
     void getAllByUserWithIncorrectParams() {
         assertThrows(BookingNotValidException.class, () ->
+                bookingController.getAllByBooker(1L, "ALL", -1, 10).size());
+
+        assertThrows(BookingNotValidException.class, () ->
                 bookingController.getAllByBooker(1L, "ALL", -1, -1).size());
 
         assertThrows(BookingNotValidException.class, () ->
+                bookingController.getAllByBooker(1L, "ALL", 10, -1).size());
+
+        assertThrows(BookingNotValidException.class, () ->
+                bookingController.getAllByOwner(1L, "ALL", -1, 10).size());
+
+        assertThrows(BookingNotValidException.class, () ->
                 bookingController.getAllByOwner(1L, "ALL", -1, -1).size());
+
+        assertThrows(BookingNotValidException.class, () ->
+                bookingController.getAllByOwner(1L, "ALL", 10, -1).size());
     }
 
     @Test
@@ -250,6 +262,7 @@ class BookingControllerTests {
         UserDto user3 = new UserDto(3L, "user3", "m@mail.ru");
         userController.add(user3);
 
+        assertThrows(BookingNotFoundException.class, () -> bookingController.getById(3L, 1L));
         assertThrows(BookingNotFoundException.class, () -> bookingController.getById(3L, 1L));
     }
 }

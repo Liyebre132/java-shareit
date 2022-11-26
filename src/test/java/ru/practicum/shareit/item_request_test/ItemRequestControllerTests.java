@@ -108,5 +108,11 @@ class ItemRequestControllerTests {
     void getAllWithWrongFrom() {
         assertThrows(ItemRequestNotValidException.class, () ->
                 itemRequestController.getAll(-1, 10, 1L));
+
+        assertThrows(ItemRequestNotValidException.class, () ->
+                itemRequestController.getAll(-1, -1, 1L));
+
+        assertThrows(ItemRequestNotValidException.class, () ->
+                itemRequestController.getAll(0, -1, 1L));
     }
 }
