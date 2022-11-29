@@ -3,7 +3,11 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemResult;
 import ru.practicum.shareit.item.exception.ItemNotValidException;
+import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
 import java.util.Collections;
@@ -38,7 +42,7 @@ public class ItemController {
     public List<ItemResult> getAll(@RequestHeader("X-Sharer-User-Id") Long userId,
                                    @RequestParam(defaultValue = "0") int from,
                                    @RequestParam(defaultValue = "10") int size) {
-        if (from < 0 || size < 0) {
+        if (from < 0 || size < 1) {
             throw new ItemNotValidException("Некорректно переданы данные для поиска");
         }
         return itemService.getAllByUser(userId, from, size);
@@ -51,7 +55,7 @@ public class ItemController {
         if (text.isBlank()) {
             return Collections.emptyList();
         }
-        if (from < 0 || size < 0) {
+        if (from < 0 || size < 1) {
             throw new ItemNotValidException("Некорректно переданы данные для поиска");
         }
         return itemService.search(text, from, size);

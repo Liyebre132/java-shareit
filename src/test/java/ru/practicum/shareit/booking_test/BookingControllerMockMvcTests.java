@@ -9,11 +9,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.BookingController;
-import ru.practicum.shareit.booking.BookingDto;
-import ru.practicum.shareit.booking.BookingResult;
-import ru.practicum.shareit.booking.BookingService;
-import ru.practicum.shareit.item.ItemResult;
-import ru.practicum.shareit.user.UserDto;
+import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingResult;
+import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.item.dto.ItemResult;
+import ru.practicum.shareit.user.dto.UserDto;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -25,8 +25,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ru.practicum.shareit.booking.BookingStatus.APPROVED;
-import static ru.practicum.shareit.booking.BookingStatus.WAITING;
+import static ru.practicum.shareit.booking.enums.BookingStatus.APPROVED;
+import static ru.practicum.shareit.booking.enums.BookingStatus.WAITING;
 
 @WebMvcTest(controllers = BookingController.class)
 class BookingControllerMockMvcTests {

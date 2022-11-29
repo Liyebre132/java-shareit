@@ -7,14 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.booking.BookingController;
-import ru.practicum.shareit.booking.BookingDto;
-import ru.practicum.shareit.booking.BookingResult;
+import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingResult;
 import ru.practicum.shareit.booking.exception.*;
 import ru.practicum.shareit.item.ItemController;
-import ru.practicum.shareit.item.ItemDto;
-import ru.practicum.shareit.item.ItemResult;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemResult;
 import ru.practicum.shareit.user.UserController;
-import ru.practicum.shareit.user.UserDto;
+import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 
 import javax.persistence.EntityNotFoundException;
@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static ru.practicum.shareit.booking.BookingStatus.*;
+import static ru.practicum.shareit.booking.enums.BookingStatus.*;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
