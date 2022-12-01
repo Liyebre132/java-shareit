@@ -8,7 +8,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.request.ItemRequestController;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.exception.ItemRequestNotFoundException;
-import ru.practicum.shareit.request.exception.ItemRequestNotValidException;
 import ru.practicum.shareit.user.UserController;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
