@@ -1,10 +1,12 @@
 package ru.practicum.shareit.request.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.item.ItemMapper;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.ItemRequestMapper;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
@@ -20,7 +22,11 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
+
 @Service
+@Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ItemRequestServiceImpl implements ItemRequestService {
@@ -46,9 +52,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public ItemRequestResult getById(long userId, long requestId) {
-        if (userRepository.findById(userId).isEmpty()) {
-            throw new UserNotFoundException("Такой пользователь не найден");
-        }
+        checkUser(userId);
         Optional<ItemRequest> itemRequest = itemRequestRepository.findById(requestId);
         if (itemRequest.isEmpty()) {
             throw new ItemRequestNotFoundException("Такой запрос не найден");
@@ -60,40 +64,49 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestResult> getAllbyRequestor(long userId) {
-        if (userRepository.findById(userId).isEmpty()) {
-            throw new UserNotFoundException("Такой пользователь не найден");
-        }
-
-        List<ItemRequestResult> itemRequests = ItemRequestMapper
-                .mapToItemRequestResult(itemRequestRepository.findByRequestor_Id(userId));
-
-        itemRequests.forEach(this::setItems);
-
-        return itemRequests;
+        checkUser(userId);
+        List<ItemRequest> itemRequests = itemRequestRepository.findByRequestor_Id(userId);
+        return setItems(itemRequests);
     }
 
     @Override
     public List<ItemRequestResult> getAll(int from, int size, Long userId) {
-        Optional<User> user = userRepository.findById(userId);
-
-        if (user.isEmpty()) {
-            throw new UserNotFoundException("Такой пользователь не найден");
-        }
-
-        List<ItemRequestResult> results = itemRequestRepository.findAllByIdIsNot(userId,
+        checkUser(userId);
+        List<ItemRequest> results = itemRequestRepository.findAllByIdIsNot(userId,
                         PageRequest.of(from / size, size))
                 .stream()
-                .map(ItemRequestMapper::toItemRequestResult)
                 .collect(Collectors.toList());
 
-        results.forEach(this::setItems);
-
-        return results;
+        return setItems(results);
     }
 
     private void setItems(ItemRequestResult itemRequest) {
         itemRequest.setItems(itemRepository.findByRequest(itemRequest.getId()).stream()
                 .map(ItemMapper::toItemResult)
                 .collect(Collectors.toList()));
+    }
+
+    private List<ItemRequestResult> setItems(List<ItemRequest> itemRequests) {
+        List<Long> itemsIds = itemRequests.stream()
+                .map(ItemRequest::getId)
+                .collect(Collectors.toList());
+        Map<Long, List<Item>> itemRequestMap = itemRepository.findByRequestIn(itemsIds).stream()
+                .collect(groupingBy(Item::getRequest, toList()));
+        List<ItemRequestResult> results = new ArrayList<>();
+        for (ItemRequest itemRequest : itemRequests) {
+            ItemRequestResult itemRequestResult = ItemRequestMapper.toItemRequestResult(itemRequest);
+            if (itemRequestMap.get(itemRequest.getId()) != null) {
+                itemRequestResult.setItems(ItemMapper.mapToItemResult(itemRequestMap.get(itemRequestResult.getId())));
+            } else {
+                itemRequestResult.setItems(Collections.emptyList());
+            }
+            results.add(itemRequestResult);
+        }
+        return results;
+    }
+
+    private void checkUser(long userId) {
+        userRepository.findById(userId).orElseThrow(()
+                -> new UserNotFoundException("Такой пользователь не найден"));
     }
 }

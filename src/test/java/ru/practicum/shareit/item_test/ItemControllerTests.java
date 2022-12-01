@@ -23,11 +23,11 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 
 import javax.persistence.EntityNotFoundException;
+import javax.validation.ConstraintViolationException;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -254,9 +254,9 @@ class ItemControllerTests {
 
     @Test
     void getAllWithIncorrectParamTest() {
-        assertThrows(ItemNotValidException.class, () -> itemController.getAll(1L, 0, -1));
-        assertThrows(ItemNotValidException.class, () -> itemController.getAll(1L, -1, 10));
-        assertThrows(ItemNotValidException.class, () -> itemController.getAll(1L, -1, -1));
+        assertThrows(ConstraintViolationException.class, () -> itemController.getAll(1L, 0, -1));
+        assertThrows(ConstraintViolationException.class, () -> itemController.getAll(1L, -1, 10));
+        assertThrows(ConstraintViolationException.class, () -> itemController.getAll(1L, -1, -1));
     }
 
     @Test
@@ -275,9 +275,9 @@ class ItemControllerTests {
 
     @Test
     void searchWrongDataTest() {
-        assertThrows(ItemNotValidException.class, () -> itemController.search("t", -1, 10));
-        assertThrows(ItemNotValidException.class, () -> itemController.search("t", -1, -1));
-        assertThrows(ItemNotValidException.class, () -> itemController.search("t", 0, -1));
+        assertThrows(ConstraintViolationException.class, () -> itemController.search("t", -1, 10));
+        assertThrows(ConstraintViolationException.class, () -> itemController.search("t", -1, -1));
+        assertThrows(ConstraintViolationException.class, () -> itemController.search("t", 0, -1));
     }
 
     @Test
@@ -303,7 +303,7 @@ class ItemControllerTests {
 
     @Test
     void addIncorrectComment() {
-        assertThrows(CommentIncorrectException.class, () ->
+        assertThrows(ConstraintViolationException.class, () ->
                 itemController.addComment(1L, 1L, new CommentDto()));
     }
 

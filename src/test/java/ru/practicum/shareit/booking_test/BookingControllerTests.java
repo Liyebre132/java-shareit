@@ -18,6 +18,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 
 import javax.persistence.EntityNotFoundException;
+import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -61,7 +62,7 @@ class BookingControllerTests {
         userDto2.setEmail("user2@email.com");
 
         bookingDto = new BookingDto();
-        bookingDto.setStart(LocalDateTime.of(2022, 10, 24, 12, 30));
+        bookingDto.setStart(LocalDateTime.now().plusDays(2));
         bookingDto.setEnd(LocalDateTime.of(2023, 11, 10, 13, 0));
         bookingDto.setItemId(1L);
     }
@@ -117,11 +118,7 @@ class BookingControllerTests {
         ItemResult item = itemController.add(user.getId(), itemDto);
         UserDto user2 = userController.add(userDto2);
 
-        BookingDto booking = new BookingDto();
-        booking.setStart(LocalDateTime.of(2022, 10, 24, 12, 30));
-        booking.setEnd(LocalDateTime.of(2022, 11, 10, 13, 0));
-        booking.setItemId(item.getId());
-        BookingResult bookingResult = bookingController.add(user2.getId(), booking);
+        BookingResult bookingResult = bookingController.add(user2.getId(), bookingDto);
 
         assertEquals(WAITING, bookingController.getById(user2.getId(), bookingResult.getId()).getStatus());
         bookingController.approved(user.getId(), bookingResult.getId(), true);
@@ -133,11 +130,7 @@ class BookingControllerTests {
         UserDto user = userController.add(userDto);
         ItemResult item = itemController.add(user.getId(), itemDto);
         UserDto user2 = userController.add(userDto2);
-        BookingDto booking = new BookingDto();
-        booking.setStart(LocalDateTime.of(2022, 10, 24, 12, 30));
-        booking.setEnd(LocalDateTime.of(2022, 11, 10, 13, 0));
-        booking.setItemId(item.getId());
-        BookingResult bookingResult = bookingController.add(user2.getId(), booking);
+        BookingResult bookingResult = bookingController.add(user2.getId(), bookingDto);
         bookingController.approved(user.getId(), bookingResult.getId(), false);
         assertEquals(REJECTED, bookingController.getById(user2.getId(), bookingResult.getId()).getStatus());
     }
@@ -184,7 +177,7 @@ class BookingControllerTests {
                 bookingController.getAllByBooker(user2.getId(), "PAST", 0, 10).size());
         assertEquals(0,
                 bookingController.getAllByBooker(user2.getId(), "CURRENT", 0, 10).size());
-        assertEquals(0,
+        assertEquals(1,
                 bookingController.getAllByBooker(user2.getId(), "FUTURE", 0, 10).size());
         assertEquals(0,
                 bookingController.getAllByBooker(user2.getId(), "REJECTED", 0, 10).size());
@@ -197,7 +190,7 @@ class BookingControllerTests {
                 bookingController.getAllByOwner(user.getId(), "ALL", 0, 10).size());
         assertEquals(0,
                 bookingController.getAllByOwner(user.getId(), "WAITING", 0, 10).size());
-        assertEquals(0,
+        assertEquals(1,
                 bookingController.getAllByOwner(user.getId(), "FUTURE", 0, 10).size());
         assertEquals(0,
                 bookingController.getAllByOwner(user.getId(), "REJECTED", 0, 10).size());
@@ -219,22 +212,22 @@ class BookingControllerTests {
 
     @Test
     void getAllByUserWithIncorrectParams() {
-        assertThrows(BookingNotValidException.class, () ->
+        assertThrows(ConstraintViolationException.class, () ->
                 bookingController.getAllByBooker(1L, "ALL", -1, 10).size());
 
-        assertThrows(BookingNotValidException.class, () ->
+        assertThrows(ConstraintViolationException.class, () ->
                 bookingController.getAllByBooker(1L, "ALL", -1, -1).size());
 
-        assertThrows(BookingNotValidException.class, () ->
+        assertThrows(ConstraintViolationException.class, () ->
                 bookingController.getAllByBooker(1L, "ALL", 10, -1).size());
 
-        assertThrows(BookingNotValidException.class, () ->
+        assertThrows(ConstraintViolationException.class, () ->
                 bookingController.getAllByOwner(1L, "ALL", -1, 10).size());
 
-        assertThrows(BookingNotValidException.class, () ->
+        assertThrows(ConstraintViolationException.class, () ->
                 bookingController.getAllByOwner(1L, "ALL", -1, -1).size());
 
-        assertThrows(BookingNotValidException.class, () ->
+        assertThrows(ConstraintViolationException.class, () ->
                 bookingController.getAllByOwner(1L, "ALL", 10, -1).size());
     }
 

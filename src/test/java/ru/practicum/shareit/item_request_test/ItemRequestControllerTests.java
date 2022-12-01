@@ -13,6 +13,8 @@ import ru.practicum.shareit.user.UserController;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 
+import javax.validation.ConstraintViolationException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -106,13 +108,13 @@ class ItemRequestControllerTests {
 
     @Test
     void getAllWithWrongFrom() {
-        assertThrows(ItemRequestNotValidException.class, () ->
+        assertThrows(ConstraintViolationException.class, () ->
                 itemRequestController.getAll(-1, 10, 1L));
 
-        assertThrows(ItemRequestNotValidException.class, () ->
+        assertThrows(ConstraintViolationException.class, () ->
                 itemRequestController.getAll(-1, -1, 1L));
 
-        assertThrows(ItemRequestNotValidException.class, () ->
+        assertThrows(ConstraintViolationException.class, () ->
                 itemRequestController.getAll(0, -1, 1L));
     }
 }

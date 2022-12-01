@@ -2,18 +2,20 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemResult;
-import ru.practicum.shareit.item.exception.ItemNotValidException;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.Collections;
 import java.util.List;
 
-@Slf4j
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/items")
@@ -40,23 +42,17 @@ public class ItemController {
 
     @GetMapping
     public List<ItemResult> getAll(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                   @RequestParam(defaultValue = "0") int from,
-                                   @RequestParam(defaultValue = "10") int size) {
-        if (from < 0 || size < 1) {
-            throw new ItemNotValidException("Некорректно переданы данные для поиска");
-        }
+                                   @PositiveOrZero @RequestParam(defaultValue = "0") int from,
+                                   @Positive @RequestParam(defaultValue = "10") int size) {
         return itemService.getAllByUser(userId, from, size);
     }
 
     @GetMapping("/search")
     public List<ItemResult> search(@RequestParam String text,
-                                   @RequestParam(defaultValue = "0") int from,
-                                   @RequestParam(defaultValue = "10") int size) {
+                                   @PositiveOrZero @RequestParam(defaultValue = "0") int from,
+                                   @Positive @RequestParam(defaultValue = "10") int size) {
         if (text.isBlank()) {
             return Collections.emptyList();
-        }
-        if (from < 0 || size < 1) {
-            throw new ItemNotValidException("Некорректно переданы данные для поиска");
         }
         return itemService.search(text, from, size);
     }

@@ -1,7 +1,7 @@
 package ru.practicum.shareit.user.dto;
 
 import lombok.*;
-import ru.practicum.shareit.user.Marker;
+import ru.practicum.shareit.Marker;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
