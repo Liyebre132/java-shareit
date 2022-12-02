@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.booking.exception.*;
 import ru.practicum.shareit.item.exception.CommentIncorrectException;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
-import ru.practicum.shareit.user.exception.UserExistsException;
+import ru.practicum.shareit.item.exception.ItemNotValidException;
+import ru.practicum.shareit.request.exception.ItemRequestNotFoundException;
+import ru.practicum.shareit.request.exception.ItemRequestNotValidException;
+import ru.practicum.shareit.user.exception.UserNotFoundException;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.ConstraintViolationException;
@@ -25,7 +28,7 @@ public class Handler {
     public Map<String, String> itemNotFound(final ItemNotFoundException e) {
         log.info("Не удалось найти вещь");
         return Map.of(
-                "error", "Вещь с таким ID не найдена",
+                "error", "NOT_FOUND",
                 "errorMessage", e.getMessage()
         );
     }
@@ -35,7 +38,7 @@ public class Handler {
     public Map<String, String> bookingNotFound(final BookingNotFoundException e) {
         log.info("Не удалось найти бронирование");
         return Map.of(
-                "error", "Бронирование с таким ID не найдена",
+                "error", "NOT_FOUND",
                 "errorMessage", e.getMessage()
         );
     }
@@ -45,7 +48,7 @@ public class Handler {
     public Map<String, String> bookingNotAvailable(final BookingNotAvailableException e) {
         log.info("Вещь недоступна для аренды");
         return Map.of(
-                "error", "Вещь с таким ID не доступна для аренды",
+                "error", "BAD_REQUEST",
                 "errorMessage", e.getMessage()
         );
     }
@@ -55,7 +58,7 @@ public class Handler {
     public Map<String, String> bookingIncorrectApproved(final BookingIncorrectApprovedException e) {
         log.info("Вещь уже забронирована и утверждена");
         return Map.of(
-                "error", "Вещь уже забронирована и утверждена",
+                "error", "BAD_REQUEST",
                 "errorMessage", e.getMessage()
         );
     }
@@ -75,7 +78,7 @@ public class Handler {
     public Map<String, String> commentIncorrect(final CommentIncorrectException e) {
         log.info("Неудалось оставить комментарий", e.fillInStackTrace());
         return Map.of(
-                "error", "Оставить комментарий неудалось",
+                "error", "BAD_REQUEST",
                 "errorMessage", e.getMessage()
         );
     }
@@ -85,17 +88,57 @@ public class Handler {
     public Map<String, String> bookingDateIncorrect(final BookingDateException e) {
         log.info("Попытка бронирования на время раньше времени его завершения");
         return Map.of(
-                "error", "Время начала бронирования раньше времени его завершения",
+                "error", "BAD_REQUEST",
                 "errorMessage", e.getMessage()
         );
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public Map<String, String> userExists(final UserExistsException e) {
-        log.info("Пользователь пытался зарегистрироваться на занятный email");
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> itemRequestNotValid(final ItemRequestNotValidException e) {
+        log.info("Переданы неверные данные для получения всех запросов");
         return Map.of(
-                "error", "Пользователь с таким email уже существует",
+                "error", "BAD_REQUEST",
+                "errorMessage", e.getMessage()
+        );
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> itemNotValid(final ItemNotValidException e) {
+        log.info("Переданы неверные данные для получения всех вещей");
+        return Map.of(
+                "error", "BAD_REQUEST",
+                "errorMessage", e.getMessage()
+        );
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> bookingNotValid(final BookingNotValidException e) {
+        log.info("Переданы неверные данные для получения всех бронирований");
+        return Map.of(
+                "error", "BAD_REQUEST",
+                "errorMessage", e.getMessage()
+        );
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> userNotFound(final UserNotFoundException e) {
+        log.info("Пользователь не был найден");
+        return Map.of(
+                "error", "NOT_FOUND",
+                "errorMessage", e.getMessage()
+        );
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> itemRequestNotFound(final ItemRequestNotFoundException e) {
+        log.info("Запрос не был найден");
+        return Map.of(
+                "error", "NOT_FOUND",
                 "errorMessage", e.getMessage()
         );
     }
@@ -105,7 +148,7 @@ public class Handler {
     public Map<String, String> notFound(final EntityNotFoundException e) {
         log.info("Не удалось найти запрашиваемую информацию");
         return Map.of(
-                "error", "404",
+                "error", "NOT_FOUND",
                 "errorMessage", e.getMessage()
         );
     }

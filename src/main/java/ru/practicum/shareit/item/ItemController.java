@@ -1,14 +1,20 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemResult;
+import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.Collections;
 import java.util.List;
 
-@Slf4j
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/items")
@@ -34,20 +40,20 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemResult> getAll(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId) {
-        if (userId != null) {
-            return itemService.getAllByUser(userId);
-        } else {
-            return itemService.getAll();
-        }
+    public List<ItemResult> getAll(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                   @PositiveOrZero @RequestParam(defaultValue = "0") int from,
+                                   @Positive @RequestParam(defaultValue = "10") int size) {
+        return itemService.getAllByUser(userId, from, size);
     }
 
     @GetMapping("/search")
-    public List<ItemResult> search(@RequestParam String text) {
+    public List<ItemResult> search(@RequestParam String text,
+                                   @PositiveOrZero @RequestParam(defaultValue = "0") int from,
+                                   @Positive @RequestParam(defaultValue = "10") int size) {
         if (text.isBlank()) {
             return Collections.emptyList();
         }
-        return itemService.search(text);
+        return itemService.search(text, from, size);
     }
 
     @DeleteMapping("{id}")

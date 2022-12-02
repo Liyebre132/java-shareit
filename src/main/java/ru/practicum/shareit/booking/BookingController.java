@@ -1,14 +1,19 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.Marker;
+import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingResult;
 import ru.practicum.shareit.booking.exception.BookingDateException;
+import ru.practicum.shareit.booking.service.BookingService;
 
-import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
-@Slf4j
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/bookings")
@@ -17,7 +22,7 @@ public class BookingController {
 
     @PostMapping
     public BookingResult add(@RequestHeader("X-Sharer-User-Id") long userId,
-                             @Valid @RequestBody BookingDto bookingDto) {
+                             @RequestBody @Validated({Marker.OnCreate.class}) BookingDto bookingDto) {
         if (!bookingDto.getEnd().isAfter(bookingDto.getStart())) {
             throw new BookingDateException("Неверное время бронирования");
         }
@@ -30,15 +35,19 @@ public class BookingController {
     }
 
     @GetMapping
-    public List<BookingResult> getAllByBooker(@RequestHeader("X-Sharer-User-Id") long userId,
-                                            @RequestParam(defaultValue = "ALL") String state) {
-        return bookingService.getAllByBooker(userId, state);
+    public List<BookingResult> getAllByBooker(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                              @RequestParam(defaultValue = "ALL") String state,
+                                              @PositiveOrZero @RequestParam(defaultValue = "0") int from,
+                                              @Positive @RequestParam(defaultValue = "10") int size) {
+        return bookingService.getAllByBooker(userId, state, from, size);
     }
 
     @GetMapping("/owner")
-    public List<BookingResult> getAllByOwner(@RequestHeader("X-Sharer-User-Id") long userId,
-                                              @RequestParam(defaultValue = "ALL") String state) {
-        return bookingService.getAllByOwner(userId, state);
+    public List<BookingResult> getAllByOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                             @RequestParam(defaultValue = "ALL") String state,
+                                             @PositiveOrZero @RequestParam(defaultValue = "0") int from,
+                                             @Positive @RequestParam(defaultValue = "10") int size) {
+        return bookingService.getAllByOwner(userId, state, from, size);
     }
 
     @PatchMapping("{bookingId}")
