@@ -7,8 +7,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.Marker;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.BookingStates;
-import ru.practicum.shareit.booking.exception.BookingDateException;
 
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
