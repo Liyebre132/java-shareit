@@ -23,9 +23,6 @@ public class BookingController {
     @PostMapping
     public ResponseEntity<Object> add(@RequestHeader("X-Sharer-User-Id") long userId,
                              @RequestBody @Validated({Marker.OnCreate.class}) BookingDto bookingDto) {
-        if (!bookingDto.getEnd().isAfter(bookingDto.getStart())) {
-            throw new BookingDateException("Неверное время бронирования");
-        }
         return bookingClient.add(userId, bookingDto);
     }
 
@@ -39,8 +36,7 @@ public class BookingController {
                                               @RequestParam(defaultValue = "ALL") String state,
                                               @PositiveOrZero @RequestParam(defaultValue = "0") int from,
                                               @Positive @RequestParam(defaultValue = "10") int size) {
-        BookingStates currentState = BookingStates.findByName(state);
-        return bookingClient.getAllByBooker(userId, currentState, from, size);
+        return bookingClient.getAllByBooker(userId, state, from, size);
     }
 
     @GetMapping("/owner")
@@ -48,8 +44,7 @@ public class BookingController {
                                              @RequestParam(defaultValue = "ALL") String state,
                                              @PositiveOrZero @RequestParam(defaultValue = "0") int from,
                                              @Positive @RequestParam(defaultValue = "10") int size) {
-        BookingStates currentState = BookingStates.findByName(state);
-        return bookingClient.getAllByOwner(userId, currentState, from, size);
+        return bookingClient.getAllByOwner(userId, state, from, size);
     }
 
     @PatchMapping("{bookingId}")

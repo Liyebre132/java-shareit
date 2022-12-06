@@ -27,18 +27,18 @@ public class BookingClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> getAllByBooker(long userId, BookingStates state, Integer from, Integer size) {
+    public ResponseEntity<Object> getAllByBooker(long userId, String state, Integer from, Integer size) {
         Map<String, Object> parameters = Map.of(
-                "state", state.name(),
+                "state", state,
                 "from", from,
                 "size", size
         );
         return get("?state={state}&from={from}&size={size}", userId, parameters);
     }
 
-    public ResponseEntity<Object> getAllByOwner(long userId, BookingStates state, Integer from, Integer size) {
+    public ResponseEntity<Object> getAllByOwner(long userId, String state, Integer from, Integer size) {
         Map<String, Object> parameters = Map.of(
-                "state", state.name(),
+                "state", state,
                 "from", from,
                 "size", size
         );

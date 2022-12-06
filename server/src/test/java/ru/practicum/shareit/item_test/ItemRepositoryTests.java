@@ -68,7 +68,7 @@ class ItemRepositoryTests {
         item.setOwner(createdUser);
         itemRepository.save(item);
 
-        Page<Item> items = itemRepository.findAllByOwner_Id(user.getId(), Pageable.ofSize(10));
+        Page<Item> items = itemRepository.findAllByOwner_IdOrderById(user.getId(), Pageable.ofSize(10));
         assertThat(items.stream().count(), equalTo(1L));
     }
 

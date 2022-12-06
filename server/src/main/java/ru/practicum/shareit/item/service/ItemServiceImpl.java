@@ -122,7 +122,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemResult> getAllByUser(long userId, int from, int size) {
-        List<Item> items = itemRepository.findAllByOwner_Id(userId, PageRequest.of(from / size, size)).stream()
+        List<Item> items = itemRepository.findAllByOwner_IdOrderById(userId, PageRequest.of(from / size, size)).stream()
                 .collect(Collectors.toList());
         List<ItemResult> results = new ArrayList<>();
         Map<Item, List<Comment>> comments =
