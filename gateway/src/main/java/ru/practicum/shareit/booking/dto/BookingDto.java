@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.practicum.shareit.Marker;
+import ru.practicum.shareit.booking.valid.StartBeforeEndDateValid;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@StartBeforeEndDateValid
 public class BookingDto {
 
     @NotNull(groups = {Marker.OnCreate.class})

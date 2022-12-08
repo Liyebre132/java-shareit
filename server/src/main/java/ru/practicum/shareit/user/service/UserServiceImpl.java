@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.user.UserMapper;
@@ -11,6 +12,7 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import java.util.List;
 
 @Service
+@Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -27,6 +29,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto update(long id, UserDto userDto) {
+        log.info(userDto.getEmail());
         User user = repository.getById(id);
         if (userDto.getName() != null && !userDto.getName().isBlank()) {
             user.setName(userDto.getName());

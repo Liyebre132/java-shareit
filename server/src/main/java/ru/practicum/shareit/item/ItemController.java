@@ -1,20 +1,15 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemResult;
 import ru.practicum.shareit.item.service.ItemService;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.Collections;
 import java.util.List;
 
-@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/items")
@@ -22,7 +17,7 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    public ItemResult add(@RequestHeader("X-Sharer-User-Id") long userId, @Valid
+    public ItemResult add(@RequestHeader("X-Sharer-User-Id") long userId,
                        @RequestBody ItemDto item) {
         return itemService.addNewItem(userId, item);
     }
@@ -41,15 +36,15 @@ public class ItemController {
 
     @GetMapping
     public List<ItemResult> getAll(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                   @PositiveOrZero @RequestParam(defaultValue = "0") int from,
-                                   @Positive @RequestParam(defaultValue = "10") int size) {
+                                   @RequestParam(defaultValue = "0") int from,
+                                   @RequestParam(defaultValue = "10") int size) {
         return itemService.getAllByUser(userId, from, size);
     }
 
     @GetMapping("/search")
     public List<ItemResult> search(@RequestParam String text,
-                                   @PositiveOrZero @RequestParam(defaultValue = "0") int from,
-                                   @Positive @RequestParam(defaultValue = "10") int size) {
+                                   @RequestParam(defaultValue = "0") int from,
+                                   @RequestParam(defaultValue = "10") int size) {
         if (text.isBlank()) {
             return Collections.emptyList();
         }
@@ -64,7 +59,7 @@ public class ItemController {
     @PostMapping("{id}/comment")
     public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") long userId,
                                  @PathVariable long id,
-                                 @Valid @RequestBody CommentDto commentDto) {
+                                 @RequestBody CommentDto commentDto) {
         return itemService.addComment(userId, id, commentDto);
     }
 }

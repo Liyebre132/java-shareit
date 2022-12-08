@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.Marker;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingStates;
 
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
@@ -34,6 +35,7 @@ public class BookingController {
                                               @RequestParam(defaultValue = "ALL") String state,
                                               @PositiveOrZero @RequestParam(defaultValue = "0") int from,
                                               @Positive @RequestParam(defaultValue = "10") int size) {
+        checkState(state);
         return bookingClient.getAllByBooker(userId, state, from, size);
     }
 
@@ -42,6 +44,7 @@ public class BookingController {
                                              @RequestParam(defaultValue = "ALL") String state,
                                              @PositiveOrZero @RequestParam(defaultValue = "0") int from,
                                              @Positive @RequestParam(defaultValue = "10") int size) {
+        checkState(state);
         return bookingClient.getAllByOwner(userId, state, from, size);
     }
 
@@ -50,5 +53,9 @@ public class BookingController {
                                            @PathVariable long bookingId,
                                            @RequestParam boolean approved) {
         return bookingClient.approved(userId, bookingId, approved);
+    }
+
+    private void checkState(String state) {
+        BookingStates.findByName(state);
     }
 }
