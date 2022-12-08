@@ -21,7 +21,6 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 
 import javax.persistence.EntityNotFoundException;
-import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -251,13 +250,6 @@ class ItemControllerTests {
     }
 
     @Test
-    void getAllWithIncorrectParamTest() {
-        assertThrows(ConstraintViolationException.class, () -> itemController.getAll(1L, 0, -1));
-        assertThrows(ConstraintViolationException.class, () -> itemController.getAll(1L, -1, 10));
-        assertThrows(ConstraintViolationException.class, () -> itemController.getAll(1L, -1, -1));
-    }
-
-    @Test
     void searchTest() {
         userController.add(userDto);
         itemController.add(1L, itemDto);
@@ -269,13 +261,6 @@ class ItemControllerTests {
         userController.add(userDto);
         itemController.add(1L, itemDto);
         assertEquals(0, itemController.search("", 0, 10).size());
-    }
-
-    @Test
-    void searchWrongDataTest() {
-        assertThrows(ConstraintViolationException.class, () -> itemController.search("t", -1, 10));
-        assertThrows(ConstraintViolationException.class, () -> itemController.search("t", -1, -1));
-        assertThrows(ConstraintViolationException.class, () -> itemController.search("t", 0, -1));
     }
 
     @Test
@@ -297,12 +282,6 @@ class ItemControllerTests {
         itemController.addComment(user2.getId(), itemResult.getId(), commentDto);
 
         assertEquals(1, itemController.getById(user.getId(), itemResult.getId()).getComments().size());
-    }
-
-    @Test
-    void addIncorrectComment() {
-        assertThrows(ConstraintViolationException.class, () ->
-                itemController.addComment(1L, 1L, new CommentDto()));
     }
 
     @Test

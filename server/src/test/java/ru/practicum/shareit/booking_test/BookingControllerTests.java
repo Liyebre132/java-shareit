@@ -17,7 +17,6 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 
 import javax.persistence.EntityNotFoundException;
-import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -207,27 +206,6 @@ class BookingControllerTests {
 
         assertThrows(BookingIncorrectStateException.class, () ->
                 bookingController.getAllByOwner(user.getId(), "SSS", 0, 10));
-    }
-
-    @Test
-    void getAllByUserWithIncorrectParams() {
-        assertThrows(ConstraintViolationException.class, () ->
-                bookingController.getAllByBooker(1L, "ALL", -1, 10).size());
-
-        assertThrows(ConstraintViolationException.class, () ->
-                bookingController.getAllByBooker(1L, "ALL", -1, -1).size());
-
-        assertThrows(ConstraintViolationException.class, () ->
-                bookingController.getAllByBooker(1L, "ALL", 10, -1).size());
-
-        assertThrows(ConstraintViolationException.class, () ->
-                bookingController.getAllByOwner(1L, "ALL", -1, 10).size());
-
-        assertThrows(ConstraintViolationException.class, () ->
-                bookingController.getAllByOwner(1L, "ALL", -1, -1).size());
-
-        assertThrows(ConstraintViolationException.class, () ->
-                bookingController.getAllByOwner(1L, "ALL", 10, -1).size());
     }
 
     @Test
